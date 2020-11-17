@@ -6,7 +6,14 @@ final class RequestTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(Request().text, "Hello, World!")
+        do {
+            let res = try Request.get(url: "http://example.com")
+        } catch let error as RequestError {
+            print(error)
+        } catch {
+            
+        }
+        
     }
 
     static var allTests = [

@@ -8,5 +8,6 @@
 #include <curl/curl.h>
 
 CURLcode curl_easy_setopt_str(CURL *handle, CURLoption option, const char* value);
+CURLcode curl_easy_setopt_long(CURL *handle, CURLoption option, long value);
 
 #endif //CSQLITE3_SHIM_H

@@ -26,17 +26,22 @@ class Request {
         curl_global_init(Int(CURL_GLOBAL_ALL))
         self.curl = curl_easy_init()
         curl_setopt(self.curl, CURLOPT_URL, url)
+        if allowRedirects {
+            curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
+        }
+
     }
 
     public func perform() throws ->  Response {
         //如果执行成功，数据都写入到res中
-        let res = Response(self);
+        let res = Response(self)
         let r = curl_easy_perform(self.curl)
 
         if r == CURLE_OK {
             return res
         } else {
-            throw RequestError.msg(txt: "curl error")
+            let e = String(cString: curl_easy_strerror(r))
+            throw RequestError.msg(txt: e)
         }
         
     }
