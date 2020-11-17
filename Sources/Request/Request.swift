@@ -23,8 +23,9 @@ class Request {
                         cookies: [String: String] = [:], files: [String] = [], auth: String = "", 
                         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil, 
                         verify: Bool = false, cert: String = "") {
-
+        curl_global_init(Int(CURL_GLOBAL_ALL))
         self.curl = curl_easy_init()
+        curl_setopt(self.curl, CURLOPT_URL, url)
     }
 
     public func perform() -> Response {
