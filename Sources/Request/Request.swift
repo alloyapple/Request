@@ -29,10 +29,12 @@ class Request {
     }
 
     public func perform() throws ->  Response {
-        let res = curl_easy_perform(self.curl)
+        //如果执行成功，数据都写入到res中
+        let res = Response(self);
+        let r = curl_easy_perform(self.curl)
 
-        if res == CURLE_OK {
-            return Response(self)
+        if r == CURLE_OK {
+            return res
         } else {
             throw RequestError.msg(txt: "curl error")
         }
