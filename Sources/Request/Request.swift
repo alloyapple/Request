@@ -1,24 +1,37 @@
 import Foundation 
+import CCurl
 
 class Request {
-
-    public static func get() throws -> Response {
-        return Response()
+    private let curl: UnsafeMutableRawPointer?
+    public static func get(url: String) throws -> Response {
+        let r = Request(method: .GET, url: url)
+        return r.perform()
     }
 
-    public static func post() throws -> Response {
-        return Response()
+    public static func post(url: String) throws -> Response {
+        let r = Request(method: .POST, url: url)
+        return r.perform()
     }
 
-    public static func put() throws -> Response {
-        return Response()
+    public static func put(url: String) throws -> Response {
+        let r = Request(method: .PUT, url: url)
+        return r.perform()
     }
 
-    public  init(method: HttpMethod, url: String, params: [String: String],
-                        data: Data, json: Data, headers: [String: String], 
-                        cookies: [String: String], files: [String], auth: String, 
-                        timeout: Float, allowRedirects: Bool, proxies: String, 
-                        verify: Bool, cert: String) {
+    public  init(method: HttpMethod, url: String, params: [String: String] = [:],
+                        data: Data? = nil, json: Data? = nil, headers: [String: String] = [:], 
+                        cookies: [String: String] = [:], files: [String] = [], auth: String = "", 
+                        timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil, 
+                        verify: Bool = false, cert: String = "") {
 
+        self.curl = curl_easy_init()
+    }
+
+    public func perform() -> Response {
+        return Response(self)
+    }
+
+    deinit {
+        curl_easy_cleanup(self.curl)
     }
 }
