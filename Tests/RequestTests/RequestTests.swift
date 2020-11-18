@@ -9,7 +9,7 @@ final class RequestTests: XCTestCase {
         do {
             let res = try Request.get(url: "http://example.com")
         } catch let error as RequestError {
-            print(error)
+            print(error.msg)
         } catch {
             
         }
