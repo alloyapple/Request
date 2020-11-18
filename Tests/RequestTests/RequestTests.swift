@@ -8,6 +8,7 @@ final class RequestTests: XCTestCase {
         // results.
         do {
             let res = try Request.get(url: "http://example.com")
+            XCTAssertEqual(res.statusCode, 200)
         } catch let error as RequestError {
             print(error.msg)
         } catch {

@@ -2,7 +2,7 @@ import Foundation
 import CCurl
 
 class Request {
-    private let curl: UnsafeMutableRawPointer?
+    public let curl: UnsafeMutableRawPointer?
     public static func get(url: String, allowRedirects: Bool = false) throws -> Response {
         let r = Request(method: .GET, url: url, allowRedirects: allowRedirects)
         return try r.perform()
