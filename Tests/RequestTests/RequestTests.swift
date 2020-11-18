@@ -13,6 +13,14 @@ final class RequestTests: XCTestCase {
         } catch {
             
         }
+
+        do {
+            let res = try Request.get(url: "http://example.com", allowRedirects: true)
+        } catch let error as RequestError {
+            print(error.msg)
+        } catch {
+            
+        }
         
     }
 
