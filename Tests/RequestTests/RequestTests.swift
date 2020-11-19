@@ -17,8 +17,17 @@ final class RequestTests: XCTestCase {
 
         do {
             let res = try Request.get(url: "http://example.com", allowRedirects: true)
-            print("\(res.text)")
+            print("\(res.statusCode)")
             XCTAssert(res.text.count > 0)
+        } catch let error as RequestError {
+            print(error.msg)
+        } catch {
+            
+        }
+
+        do {
+            let res = try Request.get(url: "http://example.com", allowRedirects: true)
+            XCTAssertEqual(res.url, "http://example.com/")
         } catch let error as RequestError {
             print(error.msg)
         } catch {

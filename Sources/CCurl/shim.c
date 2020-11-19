@@ -25,3 +25,15 @@ long curl_easy_status_code(CURL *handle) {
     return response_code;
 }
 
+char * curl_get_redirect_url(CURL *handle) {
+    char * location = NULL;
+    curl_easy_getinfo(handle, CURLINFO_REDIRECT_URL, &location);
+    return location;
+}
+
+char * curl_get_effective_url(CURL *handle) {
+    char * location = NULL;
+    curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &location);
+    return location;
+}
+

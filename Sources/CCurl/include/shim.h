@@ -15,5 +15,7 @@ CURLcode curl_easy_setopt_rw_callback(CURL *handle, CURLoption option, rw_callba
 CURLcode curl_easy_setopt_voidp(CURL *handle, CURLoption option, const void * value);
 
 long curl_easy_status_code(CURL *handle);
+char * curl_get_redirect_url(CURL *handle);
+char * curl_get_effective_url(CURL *handle);
 
 #endif //CSQLITE3_SHIM_H
