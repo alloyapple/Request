@@ -33,8 +33,8 @@ let writeHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeM
 
 class Request {
     public let curl: UnsafeMutableRawPointer?
-    public static func get(url: String, allowRedirects: Bool = false) throws -> Response {
-        let r = Request(method: .GET, url: url, allowRedirects: allowRedirects)
+    public static func get(url: String, params: [(String, CustomStringConvertible)] = [], allowRedirects: Bool = false) throws -> Response {
+        let r = Request(method: .GET, url: url, params: params, allowRedirects: allowRedirects)
         return try r.perform()
     }
 
@@ -48,17 +48,32 @@ class Request {
         return try r.perform()
     }
 
-    public  init(method: HttpMethod, url: String, params: [String: String] = [:],
+    public  init(method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
                         data: Data? = nil, json: Data? = nil, headers: [String: String] = [:], 
-                        cookies: [String: String] = [:], files: [String] = [], auth: String = "", 
+                        cookies: [String: CustomStringConvertible] = [:], files: [String] = [], auth: String = "", 
                         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil, 
                         verify: Bool = false, cert: String = "") {
         curl_global_init(Int(CURL_GLOBAL_ALL))
         self.curl = curl_easy_init()
-        curl_setopt(self.curl, CURLOPT_URL, url)
+        
         if allowRedirects {
             curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
         }
+
+        var _url = url
+
+        if params.count > 0 {
+            var result: [String] = []
+            for (k, v) in params {
+                let ck = String(cString: curl_easy_escape(nil, "\(k)", Int32(strlen(k))))
+                let cv = String(cString: curl_easy_escape(nil, "\(v)", Int32(strlen("\(v)"))))
+                result.append("\(ck)=\(cv)")
+            }
+            let ps = "/" + result.joined(separator: "&")
+            _url += ps
+        }
+
+        curl_setopt(self.curl, CURLOPT_URL, _url)
 
     }
 
