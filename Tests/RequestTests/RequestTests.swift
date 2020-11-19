@@ -2,7 +2,7 @@ import XCTest
 @testable import Request
 
 final class RequestTests: XCTestCase {
-    func testExample() {
+    func testHttpGet() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
@@ -26,7 +26,7 @@ final class RequestTests: XCTestCase {
 
         do {
             let res = try Request.get(url: "http://example.com", params: [("foo", "bar"), ("foo", "?")], allowRedirects: true)
-            XCTAssertEqual(res.url, "http://example.com/?foo=bar")
+            XCTAssertEqual(res.url, "http://example.com/?foo=bar&foo=%3F")
         } catch let error as RequestError {
             print(error.msg)
         } catch {
@@ -44,7 +44,12 @@ final class RequestTests: XCTestCase {
         
     }
 
+    func testHttpPost() {
+
+    }
+
     static var allTests = [
-        ("testExample", testExample),
+        ("testHttpGet", testHttpGet),
+        ("testHttpPost", testHttpPost),
     ]
 }
