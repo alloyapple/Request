@@ -69,7 +69,7 @@ class Request {
                 let cv = String(cString: curl_easy_escape(nil, "\(v)", Int32(strlen("\(v)"))))
                 result.append("\(ck)=\(cv)")
             }
-            let ps = "/" + result.joined(separator: "&")
+            let ps = "?" + result.joined(separator: "&")
             _url += ps
         }
 
