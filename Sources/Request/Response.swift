@@ -1,5 +1,6 @@
 import CCurl
 import Foundation
+
 class Response {
     public let request: Request
     var content: Data = Data()

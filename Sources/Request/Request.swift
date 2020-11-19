@@ -74,8 +74,8 @@ class Request {
         if params.count > 0 {
             var result: [String] = []
             for (k, v) in params {
-                let ck = String(cString: curl_easy_escape(nil, "\(k)", Int32(strlen(k))))
-                let cv = String(cString: curl_easy_escape(nil, "\(v)", Int32(strlen("\(v)"))))
+                let ck = String(cString: curl_easy_escape(nil, "\(k)", Int32(k.utf8.count)))
+                let cv = String(cString: curl_easy_escape(nil, "\(v)", Int32(v.description.utf8.count)))
                 result.append("\(ck)=\(cv)")
             }
             let ps = "?" + result.joined(separator: "&")

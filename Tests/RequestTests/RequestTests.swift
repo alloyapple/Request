@@ -41,6 +41,15 @@ final class RequestTests: XCTestCase {
         } catch {
             
         }
+
+        do {
+            let res = try Request.get(url: "http://www.qq.com", allowRedirects: true)
+            print("\(res.text)")
+        } catch let error as RequestError {
+            print(error.msg)
+        } catch {
+            
+        }
         
     }
 
