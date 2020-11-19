@@ -30,11 +30,20 @@ func cwriteHandler(dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, use
 
 let readHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = creadHandler
 let writeHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = cwriteHandler
+let curlVerson: String = {
+    String(cString: curl_version())
+}()
 
+let defaultHeaders: [String: String] = [
+    "User-Agent": "\(curlVerson)",
+    //"Accept-Encoding": "gzip, deflate",
+    "Accept": "*/*",
+    "Connection": "keep-alive"
+]
 class Request {
     public let curl: UnsafeMutableRawPointer?
-    public static func get(url: String, params: [(String, CustomStringConvertible)] = [], allowRedirects: Bool = false) throws -> Response {
-        let r = Request(method: .GET, url: url, params: params, allowRedirects: allowRedirects)
+    public static func get(url: String, params: [(String, CustomStringConvertible)] = [], headers: [String: CustomStringConvertible] = [:], allowRedirects: Bool = false) throws -> Response {
+        let r = Request(method: .GET, url: url, params: params, headers: headers, allowRedirects: allowRedirects)
         return try r.perform()
     }
 
@@ -49,7 +58,7 @@ class Request {
     }
 
     public  init(method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
-                        data: Data? = nil, json: Data? = nil, headers: [String: String] = [:], 
+                        data: Data? = nil, json: Data? = nil, headers: [String: CustomStringConvertible] = [:], 
                         cookies: [String: CustomStringConvertible] = [:], files: [String] = [], auth: String = "", 
                         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil, 
                         verify: Bool = false, cert: String = "") {
@@ -72,6 +81,15 @@ class Request {
             let ps = "?" + result.joined(separator: "&")
             _url += ps
         }
+
+        var _headers = headers
+        _headers.merge(defaultHeaders, uniquingKeysWith: { (_, last) in last })
+
+        var headerList: UnsafeMutablePointer<curl_slist>?  = nil
+        _headers.forEach { (item) in
+            headerList = curl_slist_append(headerList, "\(item.key):\(item.value)");
+        }
+        curl_setopt(self.curl, CURLOPT_HTTPHEADER, headerList)
 
         curl_setopt(self.curl, CURLOPT_URL, _url)
 

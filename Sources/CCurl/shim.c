@@ -17,6 +17,9 @@ CURLcode curl_easy_setopt_voidp(CURL *handle, CURLoption option, const void * va
     return curl_easy_setopt(handle, option, value);
 }
 
+ CURLcode curl_easy_setopt_httpheader(CURL *handle, CURLoption option, struct curl_slist *headers) {
+    return curl_easy_setopt(handle, option, headers);
+}
 
 
 long curl_easy_status_code(CURL *handle) {
