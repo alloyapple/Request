@@ -31,8 +31,8 @@ final class RequestTests: XCTestCase {
         }
 
         do {
-            let res = try Request.get(url: "http://example.com", params: [("foo", "bar"), ("foo", "?")], allowRedirects: true)
-            XCTAssertEqual(res.url, "http://example.com/?foo=bar&foo=%3F")
+            let res = try Request.get(url: "http://example.com", params: [("foo", "bar"), ("foo", "?"),("foo1", "神仙")], allowRedirects: true)
+            XCTAssertEqual(res.url, "http://example.com/?foo=bar&foo=%3F&foo1=%E7%A5%9E%E4%BB%99")
         } catch let error as RequestError {
             print(error.msg)
         } catch {
@@ -40,8 +40,8 @@ final class RequestTests: XCTestCase {
         }
 
         do {
-            let res = try Request.get(url: "http://www.microsoft.com", allowRedirects: true)
-            XCTAssertEqual(res.url, "https://www.microsoft.com/zh-cn/")
+            let res = try Request.get(url: "http://example.com", allowRedirects: true)
+            XCTAssertEqual(res.url, "http://example.com/")
         } catch let error as RequestError {
             print(error.msg)
         } catch {
