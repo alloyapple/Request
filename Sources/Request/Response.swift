@@ -8,9 +8,14 @@ extension String.Encoding {
 class Response {
     public let request: Request
     var content: Data = Data()
+    var headData: Data = Data()
 
     var statusCode: Int {
         return curl_easy_status_code(request.curl)
+    }
+
+    var header: String {
+        return String(decoding: content, as: UTF8.self)
     }
 
     var redirectURL: String {
@@ -47,6 +52,10 @@ class Response {
 
     func writeData(_ data: Data){
         self.content.append(data)
+    }
+
+    func writeHeader(_ data: Data) {
+        self.headData.append(data)
     }
 
 

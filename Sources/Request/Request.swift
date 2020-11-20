@@ -21,8 +21,17 @@ func creadHandler(dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, user
 
 func cwriteHandler(dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?) -> Int {
     if let userData = userData, let contents = dest {
-        let request: Response = userData.unretainedValue()
-        request.writeData(Data(bytes: contents, count: size * nmemb))
+        let response: Response = userData.unretainedValue()
+        response.writeData(Data(bytes: contents, count: size * nmemb))
+    }
+
+    return size * nmemb
+}
+
+func cheadHandler(dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?) -> Int {
+    if let userData = userData, let contents = dest {
+        let response: Response = userData.unretainedValue()
+        response.writeHeader(Data(bytes: contents, count: size * nmemb))
     }
 
     return size * nmemb
@@ -30,6 +39,8 @@ func cwriteHandler(dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, use
 
 let readHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = creadHandler
 let writeHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = cwriteHandler
+let headHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = cheadHandler
+
 let curlVerson: String = {
     String(cString: curl_version())
 }()
@@ -114,6 +125,9 @@ class Request {
 
         curl_setopt(self.curl, CURLOPT_WRITEFUNCTION, writeHandler)
         curl_setopt(self.curl, CURLOPT_WRITEDATA, res)
+
+        curl_setopt(self.curl, CURLOPT_HEADERFUNCTION, headHandler)
+        curl_setopt(self.curl, CURLOPT_HEADERDATA, res)
         //curl_easy_setopt(self.curl, CURLOPT_TIMEOUT, Int(self.timeOut))
 
         let r = curl_easy_perform(self.curl)
