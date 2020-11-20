@@ -24,6 +24,7 @@ class Response {
         }
     }
 
+
     var url: String {
         if let url = curl_get_effective_url(request.curl) {
             defer {

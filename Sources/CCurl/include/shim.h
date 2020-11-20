@@ -6,6 +6,7 @@
 #define CSQLITE3_SHIM_H
 
 #include <curl/curl.h>
+static long curlauth_any = CURLAUTH_ANY;
 
 CURLcode curl_easy_setopt_str(CURL *handle, CURLoption option, const char* value);
 CURLcode curl_easy_setopt_long(CURL *handle, CURLoption option, long value);

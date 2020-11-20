@@ -42,8 +42,11 @@ let defaultHeaders: [String: String] = [
 ]
 class Request {
     public let curl: UnsafeMutableRawPointer?
-    public static func get(url: String, params: [(String, CustomStringConvertible)] = [], headers: [String: CustomStringConvertible] = [:], allowRedirects: Bool = false) throws -> Response {
-        let r = Request(method: .GET, url: url, params: params, headers: headers, allowRedirects: allowRedirects)
+    public static func get(url: String, params: [(String, CustomStringConvertible)] = [],
+                             headers: [String: CustomStringConvertible] = [:], 
+                             auth: String? = nil,
+                             allowRedirects: Bool = false) throws -> Response {
+        let r = Request(method: .GET, url: url, params: params, headers: headers, auth: auth, allowRedirects: allowRedirects)
         return try r.perform()
     }
 
@@ -59,7 +62,7 @@ class Request {
 
     public  init(method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
                         data: Data? = nil, json: Data? = nil, headers: [String: CustomStringConvertible] = [:], 
-                        cookies: [String: CustomStringConvertible] = [:], files: [String] = [], auth: String = "", 
+                        cookies: [String: CustomStringConvertible] = [:], files: [String] = [], auth: String? = nil, 
                         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil, 
                         verify: Bool = false, cert: String = "") {
         curl_global_init(Int(CURL_GLOBAL_ALL))
@@ -68,6 +71,7 @@ class Request {
         if allowRedirects {
             curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
         }
+        curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
 
         var _url = url
 
@@ -90,6 +94,12 @@ class Request {
             headerList = curl_slist_append(headerList, "\(item.key):\(item.value)");
         }
         curl_setopt(self.curl, CURLOPT_HTTPHEADER, headerList)
+
+        if let auth = auth {
+            curl_setopt(curl, CURLOPT_HTTPAUTH, curlauth_any)
+            curl_setopt(curl, CURLOPT_USERPWD, auth)
+        }
+        
 
         curl_setopt(self.curl, CURLOPT_URL, _url)
 
