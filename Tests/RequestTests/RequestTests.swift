@@ -57,6 +57,19 @@ final class RequestTests: XCTestCase {
             
         }
 
+        // >>> payload = {'key1': 'value1', 'key2': 'value2'}
+        // >>> r = requests.get('https://httpbin.org/get', params=payload)
+        do {
+            let payload = [("key1", "value1"), ("key2", "value2")]
+            let res = try Request.get(url: "https://httpbin.org/get", params:payload)
+            XCTAssertEqual(res.url, "https://httpbin.org/get?key1=value1&key2=value2")
+        } catch let error as RequestError {
+            print(error.msg)
+        } catch {
+            
+        }
+
+
         
         
     }
