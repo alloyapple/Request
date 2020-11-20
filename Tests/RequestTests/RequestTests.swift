@@ -6,6 +6,12 @@ final class RequestTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
+        // for en in String.availableStringEncodings {
+        //     print("\(en): \(en.rawValue)")
+        // }
+        // String init?(data: Data, encoding: String.Encoding)
+        
+
         do {
             let res = try Request.get(url: "http://example.com")
             XCTAssertEqual(res.statusCode, 200)
@@ -42,14 +48,7 @@ final class RequestTests: XCTestCase {
             
         }
 
-        do {
-            let res = try Request.get(url: "http://www.qq.com", allowRedirects: true)
-            print("\(res.text)")
-        } catch let error as RequestError {
-            print(error.msg)
-        } catch {
-            
-        }
+        
         
     }
 

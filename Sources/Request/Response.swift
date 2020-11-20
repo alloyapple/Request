@@ -1,6 +1,10 @@
 import CCurl
 import Foundation
 
+extension String.Encoding {
+    static let gb2312 = String.Encoding(rawValue: 2147485234)
+}
+
 class Response {
     public let request: Request
     var content: Data = Data()
