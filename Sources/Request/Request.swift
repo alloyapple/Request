@@ -61,8 +61,11 @@ class Request {
         return try r.perform()
     }
 
-    public static func post(url: String) throws -> Response {
-        let r = Request(method: .POST, url: url)
+    public static func post(url: String, data: Data? = nil, json: Data? = nil,
+                             headers: [String: CustomStringConvertible] = [:], 
+                             auth: String? = nil,
+                             allowRedirects: Bool = false) throws -> Response {
+        let r = Request(method: .POST, url: url, data: data, json: json, headers: headers, auth: auth, allowRedirects: allowRedirects)
         return try r.perform()
     }
 
