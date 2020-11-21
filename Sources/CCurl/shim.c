@@ -13,6 +13,10 @@ CURLcode curl_easy_setopt_rw_callback(CURL *handle, CURLoption option, rw_callba
     return curl_easy_setopt(handle, option, callback);
 }
 
+CURLcode curl_easy_setopt_r_callback(CURL *handle, CURLoption option, r_callback callback) {
+    return curl_easy_setopt(handle, option, callback);
+}
+
 CURLcode curl_easy_setopt_voidp(CURL *handle, CURLoption option, const void * value) {
     return curl_easy_setopt(handle, option, value);
 }

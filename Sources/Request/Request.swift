@@ -12,8 +12,12 @@ public extension UnsafeMutableRawPointer {
     }
 }
 
-func creadHandler(dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?) -> Int {
-    print("cread")
+func creadHandler(dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?) -> Int {
+    if let userData = userData, let contents = dest {
+        let request: Request = userData.unretainedValue()
+        let left = request.readPostData(contents, size * nmemb)
+        return left
+    }
     return 0
 }
 
@@ -37,7 +41,7 @@ func cheadHandler(dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, user
     return size * nmemb
 }
 
-let readHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = creadHandler
+let readHandler: @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = creadHandler
 let writeHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = cwriteHandler
 let headHandler: @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int = cheadHandler
 
@@ -53,6 +57,7 @@ let defaultHeaders: [String: String] = [
 ]
 class Request {
     public let curl: UnsafeMutableRawPointer?
+    public var formData: Data?
     public static func get(url: String, params: [(String, CustomStringConvertible)] = [],
                              headers: [String: CustomStringConvertible] = [:], 
                              auth: String? = nil,
@@ -61,11 +66,11 @@ class Request {
         return try r.perform()
     }
 
-    public static func post(url: String, data: Data? = nil, json: Data? = nil,
+    public static func post(url: String, form: String? = nil, json: Data? = nil, files: [String] = [],
                              headers: [String: CustomStringConvertible] = [:], 
                              auth: String? = nil,
                              allowRedirects: Bool = false) throws -> Response {
-        let r = Request(method: .POST, url: url, data: data, json: json, headers: headers, auth: auth, allowRedirects: allowRedirects)
+        let r = Request(method: .POST, url: url, form: form, json: json, files: files, headers: headers, auth: auth, allowRedirects: allowRedirects)
         return try r.perform()
     }
 
@@ -75,8 +80,8 @@ class Request {
     }
 
     public  init(method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
-                        data: Data? = nil, json: Data? = nil, headers: [String: CustomStringConvertible] = [:], 
-                        cookies: [String: CustomStringConvertible] = [:], files: [String] = [], auth: String? = nil, 
+                        form: String? = nil, json: Data? = nil, files: [String] = [], headers: [String: CustomStringConvertible] = [:], 
+                        cookies: [String: CustomStringConvertible] = [:],  auth: String? = nil, 
                         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil, 
                         verify: Bool = false, cert: String = "") {
         curl_global_init(Int(CURL_GLOBAL_ALL))
@@ -100,6 +105,13 @@ class Request {
             _url += ps
         }
 
+        switch method {
+            case .POST:
+                 curl_setopt(curl, CURLOPT_POST, 1)
+            default:
+            break
+        }
+
         var _headers = headers
         _headers.merge(defaultHeaders, uniquingKeysWith: { (_, last) in last })
 
@@ -113,6 +125,11 @@ class Request {
             curl_setopt(curl, CURLOPT_HTTPAUTH, curlauth_any)
             curl_setopt(curl, CURLOPT_USERPWD, auth)
         }
+
+        if let data = form {
+            self.formData = data.data(using: .utf8)
+        }
+        
         
 
         curl_setopt(self.curl, CURLOPT_URL, _url)
@@ -124,7 +141,7 @@ class Request {
         let res = Response(self)
 
         curl_setopt(self.curl, CURLOPT_READFUNCTION, readHandler)
-        curl_setopt(self.curl, CURLOPT_READDATA, res)
+        curl_setopt(self.curl, CURLOPT_READDATA, self)
 
         curl_setopt(self.curl, CURLOPT_WRITEFUNCTION, writeHandler)
         curl_setopt(self.curl, CURLOPT_WRITEDATA, res)
@@ -142,6 +159,17 @@ class Request {
             throw RequestError.msg(txt: e)
         }
         
+    }
+
+    func readPostData(_ buffer: UnsafeMutablePointer<UInt8>, _ size: Int) -> Int {
+        if let postData = self.formData, postData.count > 0 {
+            let c = min(postData.count, size)
+            postData.copyBytes(to: buffer, count: c)
+            self.formData = self.formData?.dropFirst(c)
+            return c
+        }
+
+        return 0
     }
 
     deinit {
