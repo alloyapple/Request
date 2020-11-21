@@ -108,6 +108,8 @@ class Request {
         switch method {
             case .POST:
                  curl_setopt(curl, CURLOPT_POST, 1)
+            case .PUT:
+                curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT")
             default:
             break
         }
