@@ -114,6 +114,11 @@ class Request {
 
         var _headers = headers
         _headers.merge(defaultHeaders, uniquingKeysWith: { (_, last) in last })
+        if let json = json {
+            _headers["Content-Type"] = "application/json"
+            _headers["charset"] = "utf-8"
+            self.formData = json
+        }
 
         var headerList: UnsafeMutablePointer<curl_slist>?  = nil
         _headers.forEach { (item) in

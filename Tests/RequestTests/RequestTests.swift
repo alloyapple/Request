@@ -95,6 +95,29 @@ final class RequestTests: XCTestCase {
         } catch {
             
         }
+
+        do {
+            let res = try Request.post(url: "https://httpbin.org/post", form: "Test Suite 'All tests' started at 2020-11-22 00:17:00.188")
+            XCTAssertEqual(res.statusCode, 200)
+            print(res.header)
+        } catch let error as RequestError {
+            print(error.msg)
+        } catch {
+            
+        }
+
+        do {
+            let payload = """
+            {"hello": "word"}
+            """
+            let res = try Request.post(url: "https://httpbin.org/post", json: payload.data(using: .utf8))
+            XCTAssertEqual(res.statusCode, 200)
+            print(res.header)
+        } catch let error as RequestError {
+            print(error.msg)
+        } catch {
+            
+        }
     }
 
     static var allTests = [
