@@ -23,7 +23,7 @@ func creadHandler(
 }
 
 func cwriteHandler(
-    dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
+    dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
 ) -> Int {
     if let userData = userData, let contents = dest {
         let response: Response = userData.unretainedValue()
@@ -34,7 +34,7 @@ func cwriteHandler(
 }
 
 func cheadHandler(
-    dest: UnsafeMutablePointer<Int8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
+    dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
 ) -> Int {
     if let userData = userData, let contents = dest {
         let response: Response = userData.unretainedValue()
@@ -48,10 +48,10 @@ let readHandler:
     @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
         creadHandler
 let writeHandler:
-    @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
+    @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
         cwriteHandler
 let headHandler:
-    @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
+    @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
         cheadHandler
 
 let curlVerson: String = {

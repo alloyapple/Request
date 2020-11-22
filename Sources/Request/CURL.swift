@@ -1,7 +1,8 @@
 import CCurl
 
-public typealias CCurlRWCallback = @convention(c) (UnsafeMutablePointer<Int8>?, Int, Int, UnsafeMutableRawPointer?) -> Int
-public typealias CCurlRCallback = @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int
+public typealias CCurlRWCallback = @convention(c) (
+    UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?
+) -> Int
 
 @discardableResult
 func curl_setopt(_ curl: UnsafeMutableRawPointer?, _ p: CURLoption, _ url: String) -> CURLcode {
@@ -13,28 +14,31 @@ func curl_setopt(_ curl: UnsafeMutableRawPointer?, _ p: CURLoption, _ v: Int) ->
     curl_easy_setopt_long(curl, p, v)
 }
 
-
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: @escaping CCurlRWCallback) -> CURLcode {
+func curl_setopt(
+    _ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: @escaping CCurlRWCallback
+) -> CURLcode {
     return curl_easy_setopt_rw_callback(handle, option, value)
 }
 
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: @escaping CCurlRCallback) -> CURLcode {
-    return curl_easy_setopt_r_callback(handle, option, value)
-}
-
-@discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: UnsafeMutablePointer<curl_slist>?) -> CURLcode {
+func curl_setopt(
+    _ handle: UnsafeMutableRawPointer?, _ option: CURLoption,
+    _ value: UnsafeMutablePointer<curl_slist>?
+) -> CURLcode {
     return curl_easy_setopt_httpheader(handle, option, value)
 }
 
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Response) -> CURLcode {
+func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Response)
+    -> CURLcode
+{
     return curl_easy_setopt_voidp(handle, option, Unmanaged.passRetained(value).toOpaque())
 }
 
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Request) -> CURLcode {
+func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Request)
+    -> CURLcode
+{
     return curl_easy_setopt_voidp(handle, option, Unmanaged.passRetained(value).toOpaque())
 }

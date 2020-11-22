@@ -2,7 +2,7 @@ import CCurl
 import Foundation
 
 extension String.Encoding {
-    static let gb2312 = String.Encoding(rawValue: 2147485234)
+    static let gb2312 = String.Encoding(rawValue: 2_147_485_234)
 }
 
 class Response {
@@ -23,23 +23,21 @@ class Response {
             defer {
                 free(url)
             }
-            return String(cString: url); 
+            return String(cString: url)
         } else {
             return ""
         }
     }
-
 
     var url: String {
         if let url = curl_get_effective_url(request.curl) {
             defer {
                 free(url)
             }
-            return String(cString: url); 
+            return String(cString: url)
         } else {
             return ""
         }
-        
     }
 
     var text: String {
@@ -50,13 +48,12 @@ class Response {
         self.request = r
     }
 
-    func writeData(_ data: Data){
+    func writeData(_ data: Data) {
         self.content.append(data)
     }
 
     func writeHeader(_ data: Data) {
         self.headData.append(data)
     }
-
 
 }
