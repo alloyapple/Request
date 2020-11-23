@@ -80,13 +80,13 @@ class Request {
     }
 
     public static func post(
-        url: String, form: String? = nil, json: Data? = nil, files: [String] = [],
+        url: String, data: String? = nil, json: Data? = nil, files: [String: CustomStringConvertible]? = nil,
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
         allowRedirects: Bool = false
     ) throws -> Response {
         let r = Request(
-            method: .POST, url: url, form: form, json: json, files: files, headers: headers,
+            method: .POST, url: url, data: data, json: json, files: files, headers: headers,
             auth: auth, allowRedirects: allowRedirects)
         return try r.perform()
     }
@@ -98,7 +98,7 @@ class Request {
 
     public init(
         method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
-        form: String? = nil, json: Data? = nil, files: [String] = [],
+        data: String? = nil, json: Data? = nil, files: [String: CustomStringConvertible]? = nil,
         headers: [String: CustomStringConvertible] = [:],
         cookies: [String: CustomStringConvertible] = [:], auth: String? = nil,
         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil,
@@ -154,7 +154,7 @@ class Request {
             curl_setopt(curl, CURLOPT_USERPWD, auth)
         }
 
-        if let data = form {
+        if let data = data {
             self.formData = data.data(using: .utf8)
         }
 
