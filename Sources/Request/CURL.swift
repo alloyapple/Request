@@ -42,3 +42,11 @@ func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ val
 {
     return curl_easy_setopt_voidp(handle, option, Unmanaged.passRetained(value).toOpaque())
 }
+
+
+@discardableResult
+func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: OpaquePointer?)
+    -> CURLcode
+{
+    return curl_easy_setopt_mime(handle, option, value)
+}

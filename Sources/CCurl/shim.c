@@ -25,6 +25,10 @@ CURLcode curl_easy_setopt_httpheader(CURL *handle, CURLoption option, struct cur
     return curl_easy_setopt(handle, option, headers);
 }
 
+CURLcode curl_easy_setopt_mime(CURL *handle, CURLoption option, curl_mime* mimepost) {
+    return curl_easy_setopt(handle, option, mimepost);
+}
+
 long curl_easy_status_code(CURL *handle)
 {
     long response_code = 0;

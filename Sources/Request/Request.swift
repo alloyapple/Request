@@ -1,6 +1,12 @@
 import CCurl
 import Foundation
 
+
+public enum Mime {
+    case textFiled(_ name: String, _ data: String)
+    case fileFiled(_ name: String, _ data: String)
+
+}
 extension UnsafeMutableRawPointer {
     public func unretainedValue<T: AnyObject>() -> T {
         return Unmanaged<T>.fromOpaque(self).takeUnretainedValue()
@@ -80,7 +86,8 @@ class Request {
     }
 
     public static func post(
-        url: String, data: String? = nil, json: Data? = nil, files: [String: CustomStringConvertible]? = nil,
+        url: String, data: String? = nil, json: Data? = nil,
+        files: [Mime]? = nil,
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
         allowRedirects: Bool = false
@@ -98,7 +105,7 @@ class Request {
 
     public init(
         method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
-        data: String? = nil, json: Data? = nil, files: [String: CustomStringConvertible]? = nil,
+        data: String? = nil, json: Data? = nil, files: [Mime]? = nil,
         headers: [String: CustomStringConvertible] = [:],
         cookies: [String: CustomStringConvertible] = [:], auth: String? = nil,
         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil,
@@ -136,12 +143,17 @@ class Request {
         }
 
         var _headers = headers
-        _headers.merge(defaultHeaders, uniquingKeysWith: { (_, last) in last })
         if let json = json {
             _headers["Content-Type"] = "application/json"
             _headers["charset"] = "utf-8"
             self.formData = json
         }
+
+        if let _ = files {
+            _headers["Expect"] = ""
+        }
+
+        _headers.merge(defaultHeaders, uniquingKeysWith: { (_, last) in last })
 
         var headerList: UnsafeMutablePointer<curl_slist>? = nil
         _headers.forEach { (item) in
@@ -156,6 +168,24 @@ class Request {
 
         if let data = data {
             self.formData = data.data(using: .utf8)
+        }
+
+        if let files = files {
+            let form = curl_mime_init(curl)
+            files.forEach { (item) in 
+                switch item {
+                    case .textFiled(let name, let data):
+                        let field = curl_mime_addpart(form)
+                        curl_mime_name(field, name)
+                        curl_mime_data(field, data, CURL_ZERO_TERMINATED)
+                    case .fileFiled(let name, let data):
+                        let field = curl_mime_addpart(form)
+                        curl_mime_name(field, name)
+                        curl_mime_filedata(field, data)
+                }
+            }
+
+            curl_setopt(curl, CURLOPT_MIMEPOST, form)
         }
 
         curl_setopt(self.curl, CURLOPT_URL, _url)
