@@ -9,6 +9,7 @@ class Response {
     public let request: Request
     var content: Data = Data()
     var headData: Data = Data()
+    var cookies: [String] = []
 
     var statusCode: Int {
         return curl_easy_status_code(request.curl)
