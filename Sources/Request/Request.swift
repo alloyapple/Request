@@ -215,7 +215,7 @@ class Request {
         let responseUnmanaged = Unmanaged.passRetained(res)
         curl_setopt(self.curl, CURLOPT_WRITEFUNCTION, writeHandler)
         curl_setopt(self.curl, CURLOPT_WRITEDATA, responseUnmanaged)
-
+        
         curl_setopt(self.curl, CURLOPT_HEADERFUNCTION, headHandler)
         curl_setopt(self.curl, CURLOPT_HEADERDATA, responseUnmanaged)
 

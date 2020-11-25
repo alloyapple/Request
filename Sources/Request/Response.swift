@@ -30,8 +30,8 @@ class Response {
         return curl_easy_status_code(request.curl)
     }
 
-    var header: String {
-        return String(decoding: content, as: UTF8.self)
+    var headers: String {
+        return String(decoding: headData, as: UTF8.self)
     }
 
     var redirectURL: String {
