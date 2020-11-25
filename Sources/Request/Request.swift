@@ -116,12 +116,13 @@ class Request {
     ) {
         curl_global_init(Int(CURL_GLOBAL_ALL))
         self.curl = curl_easy_init()
-
+        curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
+        curl_setopt(curl, CURLOPT_COOKIEFILE, "")
+        
         if allowRedirects {
             curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
         }
-        curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
-        curl_setopt(curl, CURLOPT_COOKIEFILE, "")
+        
         if debug {
             curl_setopt(curl, CURLOPT_VERBOSE, 1)
         }
