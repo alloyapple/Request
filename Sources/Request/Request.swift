@@ -79,11 +79,12 @@ class Request {
         url: String, params: [(String, CustomStringConvertible)] = [],
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
-        allowRedirects: Bool = false
+        allowRedirects: Bool = false, 
+        debug: Bool = false
     ) throws -> Response {
         let r = Request(
             method: .GET, url: url, params: params, headers: headers, auth: auth,
-            allowRedirects: allowRedirects)
+            allowRedirects: allowRedirects, debug: debug)
         return try r.perform()
     }
 
@@ -92,15 +93,16 @@ class Request {
         files: [Mime]? = nil,
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
-        allowRedirects: Bool = false
+        allowRedirects: Bool = false,
+        debug: Bool = false
     ) throws -> Response {
         let r = Request(
             method: .POST, url: url, data: data, json: json, files: files, headers: headers,
-            auth: auth, allowRedirects: allowRedirects)
+            auth: auth, allowRedirects: allowRedirects, debug: debug)
         return try r.perform()
     }
 
-    public static func put(url: String) throws -> Response {
+    public static func put(url: String, debug: Bool = false) throws -> Response {
         let r = Request(method: .PUT, url: url)
         return try r.perform()
     }
@@ -111,7 +113,7 @@ class Request {
         headers: [String: CustomStringConvertible] = [:],
         cookies: [String: CustomStringConvertible] = [:], auth: String? = nil,
         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil,
-        verify: Bool = false, cert: String = ""
+        verify: Bool = false, cert: String = "", debug: Bool = false
     ) {
         curl_global_init(Int(CURL_GLOBAL_ALL))
         self.curl = curl_easy_init()
@@ -120,6 +122,11 @@ class Request {
             curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
         }
         curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
+        curl_setopt(curl, CURLOPT_COOKIEFILE, "")
+        if debug {
+            curl_setopt(curl, CURLOPT_VERBOSE, 1)
+        }
+        
 
         var _url = url
 

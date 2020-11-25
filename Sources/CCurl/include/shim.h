@@ -22,5 +22,6 @@ CURLcode curl_easy_setopt_mime(CURL *handle, CURLoption option, curl_mime* mimep
 long curl_easy_status_code(CURL *handle);
 char *curl_get_redirect_url(CURL *handle);
 char *curl_get_effective_url(CURL *handle);
+struct curl_slist *curl_get_cookie(CURL *handle);
 
 #endif //CSQLITE3_SHIM_H

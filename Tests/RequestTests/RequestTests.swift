@@ -83,6 +83,17 @@ final class RequestTests: XCTestCase {
 
         }
 
+        do {
+            let payload = [("name1", "value1"), ("name2", "value2")]
+            let res = try Request.get(url: "http://httpbin.org/cookies/set", params: payload)
+            XCTAssert(res.cookies.count > 0)
+
+        } catch let error as RequestError {
+            print(error.msg)
+        } catch {
+
+        }
+
     }
 
     func testHttpPost() {

@@ -9,7 +9,22 @@ class Response {
     public let request: Request
     var content: Data = Data()
     var headData: Data = Data()
-    var cookies: [String] = []
+    var cookies: [String] {
+        var list = curl_get_cookie(request.curl)
+        let nc = list
+
+        var result: [String] = []
+
+        while(list != nil) {
+            let c = String(cString: list!.pointee.data)
+            list = list?.pointee.next
+            result.append(c)
+        }
+
+       curl_slist_free_all(nc)
+
+       return result
+    }
 
     var statusCode: Int {
         return curl_easy_status_code(request.curl)

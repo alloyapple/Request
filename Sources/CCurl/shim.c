@@ -49,3 +49,10 @@ char *curl_get_effective_url(CURL *handle)
     curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &location);
     return location;
 }
+
+
+struct curl_slist *curl_get_cookie(CURL *curl) {
+    struct curl_slist *cookies = NULL;
+    curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &cookies);
+    return cookies;
+}
