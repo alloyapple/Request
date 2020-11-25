@@ -145,6 +145,14 @@ class Request {
             curl_setopt(curl, CURLOPT_POST, 1)
         case .PUT:
             curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT")
+        case .HEAD:
+            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "HEAD")
+        case .DELETE:
+            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE")
+        case .OPTIONS:
+            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "OPTIONS")
+        case .PATCH:
+            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH")
         default:
             break
         }
@@ -215,7 +223,7 @@ class Request {
         let responseUnmanaged = Unmanaged.passRetained(res)
         curl_setopt(self.curl, CURLOPT_WRITEFUNCTION, writeHandler)
         curl_setopt(self.curl, CURLOPT_WRITEDATA, responseUnmanaged)
-        
+
         curl_setopt(self.curl, CURLOPT_HEADERFUNCTION, headHandler)
         curl_setopt(self.curl, CURLOPT_HEADERDATA, responseUnmanaged)
 
