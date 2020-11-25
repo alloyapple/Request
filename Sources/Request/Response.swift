@@ -15,15 +15,15 @@ class Response {
 
         var result: [String] = []
 
-        while(list != nil) {
+        while list != nil {
             let c = String(cString: list!.pointee.data)
             list = list?.pointee.next
             result.append(c)
         }
 
-       curl_slist_free_all(nc)
+        curl_slist_free_all(nc)
 
-       return result
+        return result
     }
 
     var statusCode: Int {
@@ -56,8 +56,6 @@ class Response {
     var text: String {
         return String(decoding: content, as: UTF8.self)
     }
-
-    
 
     public init(_ r: Request) {
         self.request = r

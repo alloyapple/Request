@@ -1,7 +1,6 @@
 import CCurl
 import Foundation
 
-
 public enum Mime {
     case textFiled(_ name: String, _ data: String)
     case fileFiled(_ name: String, _ data: String)
@@ -74,12 +73,12 @@ class Request {
     public let curl: UnsafeMutableRawPointer?
     public var formData: Data?
     private var mimeForm: OpaquePointer? = nil
-    private var  headerList: UnsafeMutablePointer<curl_slist>?
+    private var headerList: UnsafeMutablePointer<curl_slist>?
     public static func get(
         url: String, params: [(String, CustomStringConvertible)] = [],
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
-        allowRedirects: Bool = false, 
+        allowRedirects: Bool = false,
         debug: Bool = false
     ) throws -> Response {
         let r = Request(
@@ -126,7 +125,6 @@ class Request {
         if debug {
             curl_setopt(curl, CURLOPT_VERBOSE, 1)
         }
-        
 
         var _url = url
 
@@ -169,7 +167,7 @@ class Request {
             headerList = curl_slist_append(headerList, "\(item.key):\(item.value)")
         }
         curl_setopt(self.curl, CURLOPT_HTTPHEADER, headerList)
-        self.headerList = headerList;
+        self.headerList = headerList
 
         if let auth = auth {
             curl_setopt(curl, CURLOPT_HTTPAUTH, curlauth_any)
@@ -182,16 +180,16 @@ class Request {
 
         if let files = files {
             self.mimeForm = curl_mime_init(curl)
-            files.forEach { (item) in 
+            files.forEach { (item) in
                 switch item {
-                    case .textFiled(let name, let data):
-                        let field = curl_mime_addpart(self.mimeForm)
-                        curl_mime_name(field, name)
-                        curl_mime_data(field, data, CURL_ZERO_TERMINATED)
-                    case .fileFiled(let name, let data):
-                        let field = curl_mime_addpart(self.mimeForm)
-                        curl_mime_name(field, name)
-                        curl_mime_filedata(field, data)
+                case .textFiled(let name, let data):
+                    let field = curl_mime_addpart(self.mimeForm)
+                    curl_mime_name(field, name)
+                    curl_mime_data(field, data, CURL_ZERO_TERMINATED)
+                case .fileFiled(let name, let data):
+                    let field = curl_mime_addpart(self.mimeForm)
+                    curl_mime_name(field, name)
+                    curl_mime_filedata(field, data)
                 }
             }
 
@@ -225,7 +223,6 @@ class Request {
             responseUnmanaged.release()
         }
 
- 
         //curl_easy_setopt(self.curl, CURLOPT_TIMEOUT, Int(self.timeOut))
 
         let r = curl_easy_perform(self.curl)
@@ -255,6 +252,6 @@ class Request {
         curl_easy_cleanup(self.curl)
         curl_mime_free(self.mimeForm)
         curl_slist_free_all(self.headerList)
-        
+
     }
 }
