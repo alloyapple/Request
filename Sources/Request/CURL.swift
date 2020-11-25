@@ -30,17 +30,17 @@ func curl_setopt(
 }
 
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Response)
+func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Unmanaged<Response> )
     -> CURLcode
 {
-    return curl_easy_setopt_voidp(handle, option, Unmanaged.passRetained(value).toOpaque())
+    return curl_easy_setopt_voidp(handle, option, value.toOpaque())
 }
 
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Request)
+func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Unmanaged<Request>)
     -> CURLcode
 {
-    return curl_easy_setopt_voidp(handle, option, Unmanaged.passRetained(value).toOpaque())
+    return curl_easy_setopt_voidp(handle, option, value.toOpaque())
 }
 
 

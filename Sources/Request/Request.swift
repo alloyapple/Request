@@ -206,14 +206,26 @@ class Request {
         //如果执行成功，数据都写入到res中
         let res = Response(self)
 
+        let requestUnmanaged = Unmanaged.passRetained(self)
         curl_setopt(self.curl, CURLOPT_READFUNCTION, readHandler)
-        curl_setopt(self.curl, CURLOPT_READDATA, self)
+        curl_setopt(self.curl, CURLOPT_READDATA, requestUnmanaged)
 
+        defer {
+            requestUnmanaged.release()
+        }
+
+        let responseUnmanaged = Unmanaged.passRetained(res)
         curl_setopt(self.curl, CURLOPT_WRITEFUNCTION, writeHandler)
-        curl_setopt(self.curl, CURLOPT_WRITEDATA, res)
+        curl_setopt(self.curl, CURLOPT_WRITEDATA, responseUnmanaged)
 
         curl_setopt(self.curl, CURLOPT_HEADERFUNCTION, headHandler)
-        curl_setopt(self.curl, CURLOPT_HEADERDATA, res)
+        curl_setopt(self.curl, CURLOPT_HEADERDATA, responseUnmanaged)
+
+        defer {
+            responseUnmanaged.release()
+        }
+
+ 
         //curl_easy_setopt(self.curl, CURLOPT_TIMEOUT, Int(self.timeOut))
 
         let r = curl_easy_perform(self.curl)
@@ -239,6 +251,7 @@ class Request {
     }
 
     deinit {
+        //print("request deinit")
         curl_easy_cleanup(self.curl)
         curl_mime_free(self.mimeForm)
         curl_slist_free_all(self.headerList)

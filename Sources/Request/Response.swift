@@ -47,9 +47,6 @@ class Response {
 
     var url: String {
         if let url = curl_get_effective_url(request.curl) {
-            defer {
-                free(url)
-            }
             return String(cString: url)
         } else {
             return ""
@@ -70,6 +67,10 @@ class Response {
 
     func writeHeader(_ data: Data) {
         self.headData.append(data)
+    }
+
+    deinit {
+        //print("response deinit")
     }
 
 }
