@@ -128,6 +128,7 @@ final class RequestTests: XCTestCase {
             let res = try Request.post(
                 url: "https://httpbin.org/post", json: payload.data(using: .utf8))
             XCTAssertEqual(res.statusCode, 200)
+            print("\(res.headers)")
         } catch let error as RequestError {
             print(error.msg)
         } catch {
@@ -138,6 +139,7 @@ final class RequestTests: XCTestCase {
             let res = try Request.post(
                 url: "https://httpbin.org/post", files: [.fileFiled("upload_file", "/home/color/Pictures/celluloid-shot0001.jpg"), .textFiled("upload_file", "file")])
             XCTAssertEqual(res.statusCode, 200)
+            
         } catch let error as RequestError {
             print(error.msg)
         } catch {

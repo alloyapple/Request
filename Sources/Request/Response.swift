@@ -30,9 +30,7 @@ class Response {
         return curl_easy_status_code(request.curl)
     }
 
-    var headers: String {
-        return String(decoding: headData, as: UTF8.self)
-    }
+    lazy var headers: [String: String] = makeHeaders()
 
     var redirectURL: String {
         if let url = curl_get_redirect_url(request.curl) {
@@ -72,6 +70,23 @@ class Response {
     func json<T>() throws -> T where T: Decodable {
         let t = try JSONDecoder().decode(T.self, from: content) as T
         return t
+    }
+
+    private func makeHeaders() -> [String: String] {
+        let headerString = String(decoding: headData, as: UTF8.self)
+        let headerArray = headerString.components(separatedBy: "\r\n")
+        var result: [String: String] = [:]
+        headerArray.forEach { (item) in
+            if(item.contains(":")) {
+                let itemArray = item.components(separatedBy: ":")
+                let key = itemArray[0].trimmingCharacters(in: .whitespacesAndNewlines)
+                let value =  itemArray[1].trimmingCharacters(in: .whitespacesAndNewlines)
+                result[key] = value
+            }
+        }
+
+
+        return result
     }
 
     deinit {
