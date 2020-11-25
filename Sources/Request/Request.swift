@@ -118,7 +118,7 @@ class Request {
         self.curl = curl_easy_init()
         curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
         curl_setopt(curl, CURLOPT_COOKIEFILE, "")
-        
+
         if allowRedirects {
             curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
         }
@@ -240,7 +240,7 @@ class Request {
             return res
         } else {
             let e = String(cString: curl_easy_strerror(r))
-            throw RequestError.msg(txt: e)
+            throw HTTPError.msg(txt: e)
         }
 
     }
