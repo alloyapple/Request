@@ -34,9 +34,6 @@ class Response {
 
     var redirectURL: String {
         if let url = curl_get_redirect_url(request.curl) {
-            defer {
-                free(url)
-            }
             return String(cString: url)
         } else {
             return ""
