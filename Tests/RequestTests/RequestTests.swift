@@ -83,6 +83,8 @@ final class RequestTests: XCTestCase {
 
         }
 
+        
+
         do {
             let payload = [("name1", "value1"), ("name2", "value2")]
             let res = try Request.get(url: "http://httpbin.org/cookies/set", params: payload)

@@ -57,6 +57,8 @@ class Response {
         return String(decoding: content, as: UTF8.self)
     }
 
+    
+
     public init(_ r: Request) {
         self.request = r
     }
@@ -67,6 +69,11 @@ class Response {
 
     func writeHeader(_ data: Data) {
         self.headData.append(data)
+    }
+
+    func json<T>() throws -> T where T: Decodable {
+        let t = try JSONDecoder().decode(T.self, from: content) as T
+        return t
     }
 
     deinit {
