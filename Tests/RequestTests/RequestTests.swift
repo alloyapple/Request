@@ -15,7 +15,7 @@ final class RequestTests: XCTestCase {
         do {
             let res = try Request.get(url: "http://example.com")
             XCTAssertEqual(res.statusCode, 200)
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -24,7 +24,7 @@ final class RequestTests: XCTestCase {
         do {
             let res = try Request.get(url: "http://example.com", allowRedirects: true)
             XCTAssert(res.text.count > 0)
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -35,7 +35,7 @@ final class RequestTests: XCTestCase {
                 url: "http://example.com", params: [("foo", "bar"), ("foo", "?"), ("foo1", "神仙")],
                 allowRedirects: true)
             XCTAssertEqual(res.url, "http://example.com/?foo=bar&foo=%3F&foo1=%E7%A5%9E%E4%BB%99")
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -44,7 +44,7 @@ final class RequestTests: XCTestCase {
         do {
             let res = try Request.get(url: "http://example.com", allowRedirects: true)
             XCTAssertEqual(res.url, "http://example.com/")
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -54,7 +54,7 @@ final class RequestTests: XCTestCase {
             let res = try Request.get(
                 url: "http://example.com", auth: "james:bond", allowRedirects: true)
             XCTAssertEqual(res.url, "http://example.com/")
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -66,7 +66,7 @@ final class RequestTests: XCTestCase {
             let payload = [("key1", "value1"), ("key2", "value2")]
             let res = try Request.get(url: "https://httpbin.org/get", params: payload)
             XCTAssertEqual(res.url, "https://httpbin.org/get?key1=value1&key2=value2")
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -77,7 +77,7 @@ final class RequestTests: XCTestCase {
             let res = try Request.get(url: "https://httpbin.org/get", params: payload)
             XCTAssertEqual(res.url, "https://httpbin.org/get?key1=value1&key2=value2")
 
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -90,7 +90,24 @@ final class RequestTests: XCTestCase {
             let res = try Request.get(url: "http://httpbin.org/cookies/set", params: payload)
             XCTAssert(res.cookies.count > 0)
 
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
+            print(error.msg)
+        } catch {
+
+        }
+         
+
+        struct  Github: Decodable {
+            var current_user_url: String
+        }
+
+        do {
+            
+            let res = try Request.get(url: "https://api.github.com")
+            let g: Github = try res.json()
+            XCTAssertEqual("https://api.github.com/user", g.current_user_url)
+
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -103,7 +120,7 @@ final class RequestTests: XCTestCase {
             let res = try Request.post(
                 url: "https://httpbin.org/post", data: "name=daniel&email=测试")
             XCTAssertEqual(res.statusCode, 200)
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -115,7 +132,7 @@ final class RequestTests: XCTestCase {
                 data: "Test Suite 'All tests' started at 2020-11-22 00:17:00.188",
                 headers: ["Content-Type": "text/plain"])
             XCTAssertEqual(res.statusCode, 200)
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -128,8 +145,7 @@ final class RequestTests: XCTestCase {
             let res = try Request.post(
                 url: "https://httpbin.org/post", json: payload.data(using: .utf8))
             XCTAssertEqual(res.statusCode, 200)
-            print("\(res.headers)")
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
@@ -140,7 +156,7 @@ final class RequestTests: XCTestCase {
                 url: "https://httpbin.org/post", files: [.fileFiled("upload_file", "/home/color/Pictures/celluloid-shot0001.jpg"), .textFiled("upload_file", "file")])
             XCTAssertEqual(res.statusCode, 200)
             
-        } catch let error as RequestError {
+        } catch let error as HTTPError {
             print(error.msg)
         } catch {
 
