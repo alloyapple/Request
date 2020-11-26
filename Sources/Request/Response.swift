@@ -75,7 +75,7 @@ class Response {
         var result: [String: String] = [:]
         headerArray.forEach { (item) in
             if(item.contains(":")) {
-                let itemArray = item.components(separatedBy: ":")
+                let itemArray = item.split(separator: ":", maxSplits: 1)
                 let key = itemArray[0].trimmingCharacters(in: .whitespacesAndNewlines)
                 let value =  itemArray[1].trimmingCharacters(in: .whitespacesAndNewlines)
                 result[key] = value
