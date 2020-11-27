@@ -84,7 +84,7 @@ class Response {
 
         return result
     }
-
+    
     deinit {
         //print("response deinit")
     }
