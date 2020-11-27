@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "swift build",
+            "label": "swift-test",
             "type": "shell",
-            "command": "swift build",
+            "command": "swift test",
             "group": {
                 "kind": "build",
                 "isDefault": true

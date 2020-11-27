@@ -10,7 +10,8 @@
             "name": "Test",
             "program": "${workspaceFolder}/.build/x86_64-unknown-linux-gnu/debug/RequestPackageTests.xctest",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "swift-test"
         }
     ]
 }
