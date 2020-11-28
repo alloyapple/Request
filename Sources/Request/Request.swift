@@ -79,10 +79,11 @@ class Request {
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
         allowRedirects: Bool = false,
+        cookies: [String] = [], 
         debug: Bool = false
     ) throws -> Response {
         let r = Request(
-            method: .GET, url: url, params: params, headers: headers, auth: auth,
+            method: .GET, url: url, params: params, headers: headers, cookies: cookies, auth: auth, 
             allowRedirects: allowRedirects, debug: debug)
         return try r.perform()
     }
@@ -110,7 +111,7 @@ class Request {
         method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
         data: String? = nil, json: Data? = nil, files: [Mime]? = nil,
         headers: [String: CustomStringConvertible] = [:],
-        cookies: [String: CustomStringConvertible] = [:], auth: String? = nil,
+        cookies: [String] = [], auth: String? = nil,
         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil,
         verify: Bool = false, cert: String = "", debug: Bool = false
     ) {
