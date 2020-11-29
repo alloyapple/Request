@@ -1,5 +1,11 @@
 class Session {
     public var cookies: [String] = []
+    let cookieDir: String
+
+    init(cookieDir: String = "./") {
+        self.cookieDir = cookieDir
+    }
+
     func get(
         url: String, params: [(String, CustomStringConvertible)] = [],
         headers: [String: CustomStringConvertible] = [:],
