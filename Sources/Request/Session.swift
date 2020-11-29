@@ -1,9 +1,17 @@
+import Foundation
+
 class Session {
     public var cookies: [String] = []
     let cookieDir: String
+    let cookieFileName: String
 
     init(cookieDir: String = "./") {
         self.cookieDir = cookieDir
+        self.cookieFileName = ProcessInfo.processInfo.globallyUniqueString
+        /*
+        curl_setopt($ch, CURLOPT_COOKIEFILE, dirname(__FILE__). '/cookie.txt'); //read cookies from here
+        curl_setopt($ch, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookie.txt'); //save cookies here
+        */
     }
 
     func get(
