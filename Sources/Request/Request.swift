@@ -79,11 +79,11 @@ class Request {
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
         allowRedirects: Bool = false,
-        cookies: [String] = [], 
+        cookie: String? = nil,
         debug: Bool = false
     ) throws -> Response {
         let r = Request(
-            method: .GET, url: url, params: params, headers: headers, cookies: cookies, auth: auth, 
+            method: .GET, url: url, params: params, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
         return try r.perform()
     }
@@ -111,19 +111,27 @@ class Request {
         method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
         data: String? = nil, json: Data? = nil, files: [Mime]? = nil,
         headers: [String: CustomStringConvertible] = [:],
-        cookies: [String] = [], auth: String? = nil,
+        cookie: String? = nil, auth: String? = nil,
         timeout: Float = 0, allowRedirects: Bool = false, proxies: String? = nil,
         verify: Bool = false, cert: String = "", debug: Bool = false
     ) {
         curl_global_init(Int(CURL_GLOBAL_ALL))
         self.curl = curl_easy_init()
         curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
+
+        if let cookie = cookie {
+            curl_setopt(curl, CURLOPT_COOKIEFILE, cookie)
+            curl_setopt(curl, CURLOPT_COOKIEJAR, cookie)
+        }
+
+        
+
         curl_setopt(curl, CURLOPT_COOKIEFILE, "")
 
         if allowRedirects {
             curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
         }
-        
+
         if debug {
             curl_setopt(curl, CURLOPT_VERBOSE, 1)
         }

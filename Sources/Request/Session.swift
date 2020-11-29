@@ -1,17 +1,13 @@
 import Foundation
 
+
 class Session {
     public var cookies: [String] = []
-    let cookieDir: String
-    let cookieFileName: String
+    let cookie: String
+    
 
     init(cookieDir: String = "./") {
-        self.cookieDir = cookieDir
-        self.cookieFileName = ProcessInfo.processInfo.globallyUniqueString
-        /*
-        curl_setopt($ch, CURLOPT_COOKIEFILE, dirname(__FILE__). '/cookie.txt'); //read cookies from here
-        curl_setopt($ch, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookie.txt'); //save cookies here
-        */
+        self.cookie = cookieDir + ProcessInfo.processInfo.globallyUniqueString
     }
 
     func get(
@@ -24,7 +20,7 @@ class Session {
         do {
             let res = try Request.get(
                 url: url, params: params, headers: headers, auth: auth,
-                allowRedirects: allowRedirects, cookies: cookies, debug: debug)
+                allowRedirects: allowRedirects, cookie: cookie, debug: debug)
             cookies = res.cookies
             return res
         }
@@ -36,5 +32,14 @@ class Session {
 
     func head() {
 
+    }
+
+    deinit {
+        do {
+            try FileManager.default.removeItem(atPath: self.cookie)
+        } catch {
+            
+        }
+        
     }
 }

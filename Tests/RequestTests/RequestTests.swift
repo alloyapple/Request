@@ -158,8 +158,21 @@ final class RequestTests: XCTestCase {
         }
     }
 
+    func testHttpSession() {
+        do {
+            let s = Session()
+            let res = try s.get(url: "http://example.com")
+            XCTAssertEqual(res.statusCode, 200)
+        } catch let error as HTTPError {
+            print(error.msg)
+        } catch {
+
+        }
+    }
+
     static var allTests = [
         ("testHttpGet", testHttpGet),
         ("testHttpPost", testHttpPost),
+        ("testHttpSession", testHttpSession),
     ]
 }
