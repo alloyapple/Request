@@ -107,6 +107,20 @@ class Request {
         return try r.perform()
     }
 
+    public static func head(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .PUT, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform()
+    }
+
     public init(
         method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
         data: String? = nil, json: Data? = nil, files: [Mime]? = nil,
@@ -123,8 +137,6 @@ class Request {
             curl_setopt(curl, CURLOPT_COOKIEFILE, cookie)
             curl_setopt(curl, CURLOPT_COOKIEJAR, cookie)
         }
-
-        
 
         curl_setopt(curl, CURLOPT_COOKIEFILE, "")
 
