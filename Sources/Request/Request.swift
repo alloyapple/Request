@@ -4,8 +4,11 @@ import Foundation
 public enum Mime {
     case textFiled(_ name: String, _ data: String)
     case fileFiled(_ name: String, _ data: String)
-
 }
+
+//参数分别是下载的数据，下载进度，错误信息
+typealias DownloadCompleteHandler = (Data, Float, String) -> Void
+
 extension UnsafeMutableRawPointer {
     public func unretainedValue<T: AnyObject>() -> T {
         return Unmanaged<T>.fromOpaque(self).takeUnretainedValue()
@@ -179,7 +182,8 @@ class Request {
         auth: String? = nil,
         allowRedirects: Bool = false,
         cookie: String? = nil,
-        debug: Bool = false
+        debug: Bool = false,
+        downloadCompleteHandler: DownloadCompleteHandler
     ) throws -> Response {
         let r = Request(
             method: .OPTIONS, url: url, headers: headers, cookie: cookie, auth: auth,
