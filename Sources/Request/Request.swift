@@ -186,7 +186,7 @@ class Request {
         downloadCompleteHandler: DownloadCompleteHandler
     ) throws -> Response {
         let r = Request(
-            method: .OPTIONS, url: url, headers: headers, cookie: cookie, auth: auth,
+            method: .GET, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
         return try r.perform()
     }
