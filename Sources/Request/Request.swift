@@ -102,8 +102,17 @@ class Request {
         return try r.perform()
     }
 
-    public static func put(url: String, debug: Bool = false) throws -> Response {
-        let r = Request(method: .PUT, url: url)
+    public static func put(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .PUT, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
         return try r.perform()
     }
 
@@ -116,7 +125,64 @@ class Request {
         debug: Bool = false
     ) throws -> Response {
         let r = Request(
-            method: .PUT, url: url, headers: headers, cookie: cookie, auth: auth,
+            method: .HEAD, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform()
+    }
+
+    public static func delete(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .DELETE, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform()
+    }
+
+    public static func patch(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .PATCH, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform()
+    }
+
+    public static func options(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .OPTIONS, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform()
+    }
+
+    //TODO: 实现下载回调
+    public static func down(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .OPTIONS, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
         return try r.perform()
     }
@@ -252,8 +318,6 @@ class Request {
         defer {
             responseUnmanaged.release()
         }
-
-        //curl_easy_setopt(self.curl, CURLOPT_TIMEOUT, Int(self.timeOut))
 
         let r = curl_easy_perform(self.curl)
 
