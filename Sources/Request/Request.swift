@@ -22,9 +22,9 @@ extension UnsafeMutableRawPointer {
 func creadHandler(
     dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
 ) -> Int {
-    if let userData = userData, let contents = dest {
+    if let userData = userData, let dest = dest {
         let request: Request = userData.unretainedValue()
-        let left = request.readPostData(contents, size * nmemb)
+        let left = request.readPostData(dest, size * nmemb)
         return left
     }
     return 0
@@ -33,9 +33,9 @@ func creadHandler(
 func cwriteHandler(
     dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
 ) -> Int {
-    if let userData = userData, let contents = dest {
+    if let userData = userData, let dest = dest {
         let response: Response = userData.unretainedValue()
-        response.writeData(Data(bytes: contents, count: size * nmemb))
+        response.writeData(Data(bytes: dest, count: size * nmemb))
     }
 
     return size * nmemb
@@ -88,7 +88,7 @@ class Request {
         let r = Request(
             method: .GET, url: url, params: params, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        return try r.perform(res: Response(r))
     }
 
     public static func post(
@@ -102,7 +102,7 @@ class Request {
         let r = Request(
             method: .POST, url: url, data: data, json: json, files: files, headers: headers,
             auth: auth, allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        return try r.perform(res: Response(r))
     }
 
     public static func put(
@@ -116,7 +116,7 @@ class Request {
         let r = Request(
             method: .PUT, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        return try r.perform(res: Response(r))
     }
 
     public static func head(
@@ -130,7 +130,7 @@ class Request {
         let r = Request(
             method: .HEAD, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        return try r.perform(res: Response(r))
     }
 
     public static func delete(
@@ -144,7 +144,7 @@ class Request {
         let r = Request(
             method: .DELETE, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        return try r.perform(res: Response(r))
     }
 
     public static func patch(
@@ -158,7 +158,7 @@ class Request {
         let r = Request(
             method: .PATCH, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        return try r.perform(res: Response(r))
     }
 
     public static func options(
@@ -172,7 +172,7 @@ class Request {
         let r = Request(
             method: .OPTIONS, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        return try r.perform(res: Response(r))
     }
 
     //TODO: 实现下载回调
@@ -183,12 +183,14 @@ class Request {
         allowRedirects: Bool = false,
         cookie: String? = nil,
         debug: Bool = false,
-        downloadCompleteHandler: DownloadCompleteHandler
+        downloadCompleteHandler: @escaping DownloadCompleteHandler
     ) throws -> Response {
         let r = Request(
             method: .GET, url: url, headers: headers, cookie: cookie, auth: auth,
             allowRedirects: allowRedirects, debug: debug)
-        return try r.perform()
+        let res = Response(r)
+        res.downloadCompleteHandler = downloadCompleteHandler
+        return try r.perform(res: res)
     }
 
     public init(
@@ -300,9 +302,8 @@ class Request {
 
     }
 
-    public func perform() throws -> Response {
+    public func perform(res: Response) throws -> Response {
         //如果执行成功，数据都写入到res中
-        let res = Response(self)
 
         let requestUnmanaged = Unmanaged.passRetained(self)
         curl_setopt(self.curl, CURLOPT_READFUNCTION, readHandler)
