@@ -175,7 +175,6 @@ class Request {
         return try r.perform(res: Response(r))
     }
 
-    //TODO: 实现下载回调
     public static func download(
         url: String,
         headers: [String: CustomStringConvertible] = [:],
