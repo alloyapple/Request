@@ -176,7 +176,7 @@ class Request {
     }
 
     //TODO: 实现下载回调
-    public static func down(
+    public static func download(
         url: String,
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
