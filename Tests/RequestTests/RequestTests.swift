@@ -5,7 +5,6 @@ import XCTest
 final class RequestTests: XCTestCase {
     func testHttpGet() {
 
-
         do {
             let res = try Request.get(url: "http://example.com")
             XCTAssertEqual(res.statusCode, 200)
@@ -77,8 +76,6 @@ final class RequestTests: XCTestCase {
 
         }
 
-        
-
         do {
             let payload = [("name1", "value1"), ("name2", "value2")]
             let res = try Request.get(url: "http://httpbin.org/cookies/set", params: payload)
@@ -90,14 +87,13 @@ final class RequestTests: XCTestCase {
         } catch {
 
         }
-         
 
-        struct  Github: Decodable {
+        struct Github: Decodable {
             var current_user_url: String
         }
 
         do {
-            
+
             let res = try Request.get(url: "https://api.github.com")
             let g: Github = try res.json()
             XCTAssertEqual("https://api.github.com/user", g.current_user_url)
@@ -148,9 +144,13 @@ final class RequestTests: XCTestCase {
 
         do {
             let res = try Request.post(
-                url: "https://httpbin.org/post", files: [.fileFiled("upload_file", "/home/color/Pictures/celluloid-shot0001.jpg"), .textFiled("upload_file", "file")])
+                url: "https://httpbin.org/post",
+                files: [
+                    .fileFiled("upload_file", "/home/color/Pictures/celluloid-shot0001.jpg"),
+                    .textFiled("upload_file", "file"),
+                ])
             XCTAssertEqual(res.statusCode, 200)
-            
+
         } catch let error as HTTPError {
             print(error.msg)
         } catch {
@@ -170,9 +170,27 @@ final class RequestTests: XCTestCase {
         }
     }
 
+    func testDownload() {
+        do {
+            let res = try Request.download(
+                url:
+                    "https://static.cnbetacdn.com/thumb/article/2020/1210/87786a7407e8d2f.jpg"
+            ) { (data, percent, msg) in
+                print("下载数据长度：\(data.count)")
+            }
+            XCTAssertEqual(res.statusCode, 200)
+        } catch let error as HTTPError {
+            print(error.msg)
+        } catch {
+
+        }
+
+    }
+
     static var allTests = [
         ("testHttpGet", testHttpGet),
         ("testHttpPost", testHttpPost),
         ("testHttpSession", testHttpSession),
+        ("testDownload", testDownload),
     ]
 }
