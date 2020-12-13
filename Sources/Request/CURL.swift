@@ -5,7 +5,7 @@ public typealias CCurlRWCallback = @convention(c) (
 ) -> Int
 
 public typealias CCurlProgressCallback = @convention(c) (
-    UnsafeMutableRawPointer?, Double, Double, Double, Double
+    UnsafeMutableRawPointer?, Int, Int, Int, Int
 ) -> Int32
 
 

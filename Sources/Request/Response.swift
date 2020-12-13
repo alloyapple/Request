@@ -8,10 +8,10 @@ extension String.Encoding {
 class Response {
     public let request: Request
     public var downloadCompleteHandler: DownloadCompleteHandler? = nil
-    public var dltotal: Double = 0.0
-    public var dlnow: Double = 0.0
-    public var ultotal: Double = 0.0
-    public var ulnow: Double = 0.0
+    public var dltotal: Int = 0
+    public var dlnow: Int = 0
+    public var ultotal: Int = 0
+    public var ulnow: Int = 0
 
     var content: Data = Data()
     var headData: Data = Data()
@@ -63,7 +63,7 @@ class Response {
     }
 
     func writeData(_ data: Data) {
-        self.dlnow += Double(data.count)
+        self.dlnow += data.count
         if let downloadCompleteHandler = self.downloadCompleteHandler {
             downloadCompleteHandler(
                 data, Int(self.dlnow), Int(self.dltotal))

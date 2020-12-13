@@ -53,8 +53,8 @@ func cheadHandler(
 }
 
 func cprogressHandler(
-    userData: UnsafeMutableRawPointer?, dltotal: Double, dlnow: Double, ultotal: Double,
-    ulnow: Double
+    userData: UnsafeMutableRawPointer?, dltotal: Int, dlnow: Int, ultotal: Int,
+    ulnow: Int
 ) -> Int32 {
     if let userData = userData {
         let response: Response = userData.unretainedValue()
@@ -77,7 +77,7 @@ let headHandler:
         cheadHandler
 
 let progressHandler:
-    @convention(c) (UnsafeMutableRawPointer?, Double, Double, Double, Double) -> Int32 =
+    @convention(c) (UnsafeMutableRawPointer?, Int, Int, Int, Int) -> Int32 =
         cprogressHandler
 
 public let curlVerson: String = {
@@ -331,6 +331,10 @@ class Request {
         }
 
         let responseUnmanaged = Unmanaged.passRetained(res)
+        curl_setopt(self.curl, CURLOPT_NOPROGRESS, 0)
+        curl_setopt(self.curl, CURLOPT_XFERINFOFUNCTION, progressHandler)
+        curl_setopt(self.curl, CURLOPT_PROGRESSDATA, responseUnmanaged)
+        
         curl_setopt(self.curl, CURLOPT_WRITEFUNCTION, writeHandler)
         curl_setopt(self.curl, CURLOPT_WRITEDATA, responseUnmanaged)
 
@@ -338,9 +342,8 @@ class Request {
         curl_setopt(self.curl, CURLOPT_HEADERDATA, responseUnmanaged)
 
         //
-        curl_setopt(self.curl, CURLOPT_PROGRESSFUNCTION, progressHandler)
-        curl_setopt(self.curl, CURLOPT_PROGRESSDATA, responseUnmanaged)
-        curl_setopt(self.curl, CURLOPT_NOPROGRESS, 0)
+        
+        
 
         defer {
             responseUnmanaged.release()
