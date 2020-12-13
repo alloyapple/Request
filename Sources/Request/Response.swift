@@ -64,7 +64,8 @@ class Response {
 
     func writeData(_ data: Data) {
         if let downloadCompleteHandler = self.downloadCompleteHandler {
-            downloadCompleteHandler(data, Int(self.dltotal) > 0 ? self.dlnow / self.dltotal: 0.0, "")
+            downloadCompleteHandler(
+                data, Int(self.dltotal) > 0 ? self.dlnow / self.dltotal : 0.0, "")
         } else {
             self.content.append(data)
         }
