@@ -20,6 +20,10 @@ CURLcode curl_easy_setopt_voidp(CURL *handle, CURLoption option, const void *val
     return curl_easy_setopt(handle, option, value);
 }
 
+CURLcode curl_easy_setopt_progressfunction(CURL *handle, CURLoption option, progress_callback callback) {
+    return curl_easy_setopt(handle, option, callback);
+}
+
 CURLcode curl_easy_setopt_httpheader(CURL *handle, CURLoption option, struct curl_slist *headers)
 {
     return curl_easy_setopt(handle, option, headers);

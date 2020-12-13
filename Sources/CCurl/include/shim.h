@@ -17,7 +17,10 @@ CURLcode curl_easy_setopt_rw_callback(CURL *handle, CURLoption option, rw_callba
 CURLcode curl_easy_setopt_voidp(CURL *handle, CURLoption option, const void *value);
 CURLcode curl_easy_setopt_httpheader(CURL *handle, CURLoption option, struct curl_slist *headers);
 
-CURLcode curl_easy_setopt_mime(CURL *handle, CURLoption option, curl_mime* mimepost);
+typedef int32_t (*progress_callback)(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+CURLcode curl_easy_setopt_progressfunction(CURL *handle, CURLoption option, progress_callback callback);
+
+CURLcode curl_easy_setopt_mime(CURL *handle, CURLoption option, curl_mime *mimepost);
 
 long curl_easy_status_code(CURL *handle);
 char *curl_get_redirect_url(CURL *handle);

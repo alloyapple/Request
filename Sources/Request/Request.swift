@@ -52,6 +52,21 @@ func cheadHandler(
     return size * nmemb
 }
 
+func cprogressHandler(
+    userData: UnsafeMutableRawPointer?, dltotal: Double, dlnow: Double, ultotal: Double,
+    ulnow: Double
+) -> Int32 {
+    if let userData = userData {
+        let response: Response = userData.unretainedValue()
+        response.dltotal = dltotal
+        response.dlnow = dlnow
+        response.ultotal = ultotal
+        response.ulnow = ulnow
+    }
+
+    return 1
+}
+
 let readHandler:
     @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
         creadHandler
@@ -61,6 +76,10 @@ let writeHandler:
 let headHandler:
     @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
         cheadHandler
+
+let progressHandler:
+    @convention(c) (UnsafeMutableRawPointer?, Double, Double, Double, Double) -> Int32 =
+        cprogressHandler
 
 let curlVerson: String = {
     String(cString: curl_version())
@@ -318,6 +337,9 @@ class Request {
 
         curl_setopt(self.curl, CURLOPT_HEADERFUNCTION, headHandler)
         curl_setopt(self.curl, CURLOPT_HEADERDATA, responseUnmanaged)
+
+        curl_setopt(self.curl, CURLOPT_PROGRESSFUNCTION, progressHandler)
+        curl_setopt(self.curl, CURLOPT_PROGRESSDATA, responseUnmanaged)
 
         defer {
             responseUnmanaged.release()

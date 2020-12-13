@@ -4,6 +4,11 @@ public typealias CCurlRWCallback = @convention(c) (
     UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?
 ) -> Int
 
+public typealias CCurlProgressCallback = @convention(c) (
+    UnsafeMutableRawPointer?, Double, Double, Double, Double
+) -> Int32
+
+
 @discardableResult
 func curl_setopt(_ curl: UnsafeMutableRawPointer?, _ p: CURLoption, _ url: String) -> CURLcode {
     curl_easy_setopt_str(curl, p, url)
@@ -23,6 +28,13 @@ func curl_setopt(
 
 @discardableResult
 func curl_setopt(
+    _ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: @escaping CCurlProgressCallback
+) -> CURLcode {
+    return curl_easy_setopt_progressfunction(handle, option, value)
+}
+
+@discardableResult
+func curl_setopt(
     _ handle: UnsafeMutableRawPointer?, _ option: CURLoption,
     _ value: UnsafeMutablePointer<curl_slist>?
 ) -> CURLcode {
@@ -30,19 +42,22 @@ func curl_setopt(
 }
 
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Unmanaged<Response> )
+func curl_setopt(
+    _ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Unmanaged<Response>
+)
     -> CURLcode
 {
     return curl_easy_setopt_voidp(handle, option, value.toOpaque())
 }
 
 @discardableResult
-func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Unmanaged<Request>)
+func curl_setopt(
+    _ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: Unmanaged<Request>
+)
     -> CURLcode
 {
     return curl_easy_setopt_voidp(handle, option, value.toOpaque())
 }
-
 
 @discardableResult
 func curl_setopt(_ handle: UnsafeMutableRawPointer?, _ option: CURLoption, _ value: OpaquePointer?)
