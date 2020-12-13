@@ -81,7 +81,7 @@ let progressHandler:
     @convention(c) (UnsafeMutableRawPointer?, Double, Double, Double, Double) -> Int32 =
         cprogressHandler
 
-let curlVerson: String = {
+public let curlVerson: String = {
     String(cString: curl_version())
 }()
 

@@ -4,7 +4,7 @@ import XCTest
 
 final class RequestTests: XCTestCase {
     func testHttpGet() {
-
+        print("curl version: \(curlVerson)")
         do {
             let res = try Request.get(url: "http://example.com")
             XCTAssertEqual(res.statusCode, 200)
