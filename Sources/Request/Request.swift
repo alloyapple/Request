@@ -7,7 +7,7 @@ public enum Mime {
 }
 
 //参数分别是下载的数据，下载进度，错误信息
-typealias DownloadCompleteHandler = (Data, Double, String) -> Void
+typealias DownloadCompleteHandler = (Data, Int, Int) -> Void
 
 extension UnsafeMutableRawPointer {
     public func unretainedValue<T: AnyObject>() -> T {
@@ -59,7 +59,6 @@ func cprogressHandler(
     if let userData = userData {
         let response: Response = userData.unretainedValue()
         response.dltotal = dltotal
-        response.dlnow = dlnow
         response.ultotal = ultotal
         response.ulnow = ulnow
     }
