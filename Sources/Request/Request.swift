@@ -7,7 +7,7 @@ public enum Mime {
 }
 
 //参数分别是下载的数据，下载进度，错误信息
-typealias DownloadCompleteHandler = (Data, Float, String) -> Void
+typealias DownloadCompleteHandler = (Data, Double, String) -> Void
 
 extension UnsafeMutableRawPointer {
     public func unretainedValue<T: AnyObject>() -> T {
@@ -64,7 +64,7 @@ func cprogressHandler(
         response.ulnow = ulnow
     }
 
-    return 1
+    return 0
 }
 
 let readHandler:
@@ -338,8 +338,10 @@ class Request {
         curl_setopt(self.curl, CURLOPT_HEADERFUNCTION, headHandler)
         curl_setopt(self.curl, CURLOPT_HEADERDATA, responseUnmanaged)
 
+        //
         curl_setopt(self.curl, CURLOPT_PROGRESSFUNCTION, progressHandler)
         curl_setopt(self.curl, CURLOPT_PROGRESSDATA, responseUnmanaged)
+        curl_setopt(self.curl, CURLOPT_NOPROGRESS, 0)
 
         defer {
             responseUnmanaged.release()

@@ -176,7 +176,7 @@ final class RequestTests: XCTestCase {
                 url:
                     "https://static.cnbetacdn.com/thumb/article/2020/1210/87786a7407e8d2f.jpg"
             ) { (data, percent, msg) in
-                print("下载数据长度：\(data.count)  download: \(percent)")
+                print("下载数据长度：\(data.count)  download: \(100 * percent)")
             }
             XCTAssertEqual(res.statusCode, 200)
         } catch let error as HTTPError {
