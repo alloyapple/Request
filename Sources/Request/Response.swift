@@ -5,7 +5,7 @@ extension String.Encoding {
     static let gb2312 = String.Encoding(rawValue: 2_147_485_234)
 }
 
-class Response {
+public class Response {
     public let request: Request
     public var downloadCompleteHandler: DownloadCompleteHandler? = nil
     public var dltotal: Int = 0
@@ -15,7 +15,7 @@ class Response {
 
     var content: Data = Data()
     var headData: Data = Data()
-    var cookies: [String] {
+    public var cookies: [String] {
         var list = curl_get_cookie(request.curl)
         let nc = list
 
@@ -32,11 +32,11 @@ class Response {
         return result
     }
 
-    var statusCode: Int {
+    public var statusCode: Int {
         return curl_easy_status_code(request.curl)
     }
 
-    lazy var headers: [String: String] = makeHeaders()
+    public lazy var headers: [String: String] = makeHeaders()
 
     var redirectURL: String {
         if let url = curl_get_redirect_url(request.curl) {
@@ -46,7 +46,7 @@ class Response {
         }
     }
 
-    var url: String {
+    public var url: String {
         if let url = curl_get_effective_url(request.curl) {
             return String(cString: url)
         } else {
@@ -54,7 +54,7 @@ class Response {
         }
     }
 
-    var text: String {
+    public var text: String {
         return String(decoding: content, as: UTF8.self)
     }
 
@@ -76,7 +76,7 @@ class Response {
         self.headData.append(data)
     }
 
-    func json<T>() throws -> T where T: Decodable {
+    public func json<T>() throws -> T where T: Decodable {
         let t = try JSONDecoder().decode(T.self, from: content) as T
         return t
     }

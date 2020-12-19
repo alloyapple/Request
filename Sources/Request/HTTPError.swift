@@ -1,5 +1,5 @@
 
-enum HTTPError: Error {
+public enum HTTPError: Error {
     case msg(txt: String)
     var msg: String {
         switch self {

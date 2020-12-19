@@ -1,16 +1,16 @@
 import Foundation
 
 
-class Session {
+public class Session {
     public var cookies: [String] = []
     let cookie: String
     
 
-    init(cookieDir: String = "./") {
+    public init(cookieDir: String = "./") {
         self.cookie = cookieDir + ProcessInfo.processInfo.globallyUniqueString
     }
 
-    func get(
+    public func get(
         url: String, params: [(String, CustomStringConvertible)] = [],
         headers: [String: CustomStringConvertible] = [:],
         auth: String? = nil,
@@ -26,10 +26,12 @@ class Session {
         }
     }
 
+    //TODO:添加代码
     func post() {
 
     }
 
+    //TODO:添加代码
     func head() {
 
     }
