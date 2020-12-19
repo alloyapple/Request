@@ -76,7 +76,7 @@ public class Response {
         self.headData.append(data)
     }
 
-    func json<T>() throws -> T where T: Decodable {
+    public func json<T>() throws -> T where T: Decodable {
         let t = try JSONDecoder().decode(T.self, from: content) as T
         return t
     }
