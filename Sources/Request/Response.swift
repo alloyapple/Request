@@ -15,7 +15,7 @@ public class Response {
 
     var content: Data = Data()
     var headData: Data = Data()
-    var cookies: [String] {
+    public var cookies: [String] {
         var list = curl_get_cookie(request.curl)
         let nc = list
 
@@ -32,11 +32,11 @@ public class Response {
         return result
     }
 
-    var statusCode: Int {
+    public var statusCode: Int {
         return curl_easy_status_code(request.curl)
     }
 
-    lazy var headers: [String: String] = makeHeaders()
+    public lazy var headers: [String: String] = makeHeaders()
 
     var redirectURL: String {
         if let url = curl_get_redirect_url(request.curl) {
@@ -46,7 +46,7 @@ public class Response {
         }
     }
 
-    var url: String {
+    public var url: String {
         if let url = curl_get_effective_url(request.curl) {
             return String(cString: url)
         } else {
@@ -54,7 +54,7 @@ public class Response {
         }
     }
 
-    var text: String {
+    public var text: String {
         return String(decoding: content, as: UTF8.self)
     }
 
