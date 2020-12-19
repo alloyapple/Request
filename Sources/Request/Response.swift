@@ -5,7 +5,7 @@ extension String.Encoding {
     static let gb2312 = String.Encoding(rawValue: 2_147_485_234)
 }
 
-class Response {
+public class Response {
     public let request: Request
     public var downloadCompleteHandler: DownloadCompleteHandler? = nil
     public var dltotal: Int = 0

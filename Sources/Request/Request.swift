@@ -7,7 +7,7 @@ public enum Mime {
 }
 
 //参数分别是下载的数据，下载进度，错误信息
-typealias DownloadCompleteHandler = (Data, Int, Int) -> Void
+public typealias DownloadCompleteHandler = (Data, Int, Int) -> Void
 
 extension UnsafeMutableRawPointer {
     public func unretainedValue<T: AnyObject>() -> T {
@@ -90,7 +90,7 @@ let defaultHeaders: [String: String] = [
     "Accept": "*/*",
     "Connection": "keep-alive",
 ]
-class Request {
+public class Request {
     public let curl: UnsafeMutableRawPointer?
     public var formData: Data?
     private var mimeForm: OpaquePointer? = nil
