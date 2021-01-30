@@ -185,6 +185,11 @@ final class RequestTests: XCTestCase {
 
         }
 
+        if let url = NSURL(string: "http://www.163.com/abc") {
+            print("url: \(url.absoluteString)")
+            print("path: \(url.path ?? "")")
+        }
+
     }
 
     static var allTests = [
