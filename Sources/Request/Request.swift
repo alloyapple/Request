@@ -8,6 +8,8 @@ public enum Mime {
 
 //参数分别是下载的数据，下载进度，错误信息
 public typealias DownloadCompleteHandler = (Data, Int, Int) -> Void
+typealias Buffer = UnsafeMutablePointer<UInt8>?
+typealias UserData = UnsafeMutableRawPointer?
 
 extension UnsafeMutableRawPointer {
     public func unretainedValue<T: AnyObject>() -> T {
@@ -20,7 +22,7 @@ extension UnsafeMutableRawPointer {
 }
 
 func creadHandler(
-    dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
+    dest: Buffer, size: Int, nmemb: Int, userData: UserData
 ) -> Int {
     if let userData = userData, let dest = dest {
         let request: Request = userData.unretainedValue()
@@ -31,7 +33,7 @@ func creadHandler(
 }
 
 func cwriteHandler(
-    dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
+    dest: Buffer, size: Int, nmemb: Int, userData: UserData
 ) -> Int {
     if let userData = userData, let dest = dest {
         let response: Response = userData.unretainedValue()
@@ -42,18 +44,18 @@ func cwriteHandler(
 }
 
 func cheadHandler(
-    dest: UnsafeMutablePointer<UInt8>?, size: Int, nmemb: Int, userData: UnsafeMutableRawPointer?
+    dest: Buffer, size: Int, nmemb: Int, userData: UserData
 ) -> Int {
-    if let userData = userData, let contents = dest {
+    if let userData = userData, let dest = dest {
         let response: Response = userData.unretainedValue()
-        response.writeHeader(Data(bytes: contents, count: size * nmemb))
+        response.writeHeader(Data(bytes: dest, count: size * nmemb))
     }
 
     return size * nmemb
 }
 
 func cprogressHandler(
-    userData: UnsafeMutableRawPointer?, dltotal: Int, dlnow: Int, ultotal: Int,
+    userData: UserData, dltotal: Int, dlnow: Int, ultotal: Int,
     ulnow: Int
 ) -> Int32 {
     if let userData = userData {
@@ -66,19 +68,16 @@ func cprogressHandler(
     return 0
 }
 
-let readHandler:
-    @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
-        creadHandler
-let writeHandler:
-    @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
-        cwriteHandler
-let headHandler:
-    @convention(c) (UnsafeMutablePointer<UInt8>?, Int, Int, UnsafeMutableRawPointer?) -> Int =
-        cheadHandler
 
-let progressHandler:
-    @convention(c) (UnsafeMutableRawPointer?, Int, Int, Int, Int) -> Int32 =
-        cprogressHandler
+let readHandler: @convention(c) (Buffer, Int, Int, UserData) -> Int =
+    creadHandler
+let writeHandler: @convention(c) (Buffer, Int, Int, UserData) -> Int =
+    cwriteHandler
+let headHandler: @convention(c) (Buffer, Int, Int, UserData) -> Int =
+    cheadHandler
+
+let progressHandler: @convention(c) (UserData, Int, Int, Int, Int) -> Int32 =
+    cprogressHandler
 
 public let curlVerson: String = {
     String(cString: curl_version())
@@ -334,7 +333,7 @@ public class Request {
         curl_setopt(self.curl, CURLOPT_NOPROGRESS, 0)
         curl_setopt(self.curl, CURLOPT_XFERINFOFUNCTION, progressHandler)
         curl_setopt(self.curl, CURLOPT_PROGRESSDATA, responseUnmanaged)
-        
+
         curl_setopt(self.curl, CURLOPT_WRITEFUNCTION, writeHandler)
         curl_setopt(self.curl, CURLOPT_WRITEDATA, responseUnmanaged)
 
@@ -342,8 +341,6 @@ public class Request {
         curl_setopt(self.curl, CURLOPT_HEADERDATA, responseUnmanaged)
 
         //
-        
-        
 
         defer {
             responseUnmanaged.release()
