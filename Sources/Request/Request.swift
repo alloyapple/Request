@@ -93,121 +93,7 @@ public class Request {
     public var formData: Data?
     private var mimeForm: OpaquePointer? = nil
     private var headerList: UnsafeMutablePointer<curl_slist>?
-    public static func get(
-        url: String, params: [(String, CustomStringConvertible)] = [],
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        cookie: String? = nil,
-        debug: Bool = false
-    ) throws -> Response {
-        let r = Request(
-            method: .GET, url: url, params: params, headers: headers, cookie: cookie, auth: auth,
-            allowRedirects: allowRedirects, debug: debug)
-        return try r.perform(res: Response(r))
-    }
-
-    public static func post(
-        url: String, data: String? = nil, json: Data? = nil,
-        files: [Mime]? = nil,
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        debug: Bool = false
-    ) throws -> Response {
-        let r = Request(
-            method: .POST, url: url, data: data, json: json, files: files, headers: headers,
-            auth: auth, allowRedirects: allowRedirects, debug: debug)
-        return try r.perform(res: Response(r))
-    }
-
-    public static func put(
-        url: String,
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        cookie: String? = nil,
-        debug: Bool = false
-    ) throws -> Response {
-        let r = Request(
-            method: .PUT, url: url, headers: headers, cookie: cookie, auth: auth,
-            allowRedirects: allowRedirects, debug: debug)
-        return try r.perform(res: Response(r))
-    }
-
-    public static func head(
-        url: String,
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        cookie: String? = nil,
-        debug: Bool = false
-    ) throws -> Response {
-        let r = Request(
-            method: .HEAD, url: url, headers: headers, cookie: cookie, auth: auth,
-            allowRedirects: allowRedirects, debug: debug)
-        return try r.perform(res: Response(r))
-    }
-
-    public static func delete(
-        url: String,
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        cookie: String? = nil,
-        debug: Bool = false
-    ) throws -> Response {
-        let r = Request(
-            method: .DELETE, url: url, headers: headers, cookie: cookie, auth: auth,
-            allowRedirects: allowRedirects, debug: debug)
-        return try r.perform(res: Response(r))
-    }
-
-    public static func patch(
-        url: String,
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        cookie: String? = nil,
-        debug: Bool = false
-    ) throws -> Response {
-        let r = Request(
-            method: .PATCH, url: url, headers: headers, cookie: cookie, auth: auth,
-            allowRedirects: allowRedirects, debug: debug)
-        return try r.perform(res: Response(r))
-    }
-
-    public static func options(
-        url: String,
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        cookie: String? = nil,
-        debug: Bool = false
-    ) throws -> Response {
-        let r = Request(
-            method: .OPTIONS, url: url, headers: headers, cookie: cookie, auth: auth,
-            allowRedirects: allowRedirects, debug: debug)
-        return try r.perform(res: Response(r))
-    }
-
-    public static func download(
-        url: String,
-        headers: [String: CustomStringConvertible] = [:],
-        auth: String? = nil,
-        allowRedirects: Bool = false,
-        cookie: String? = nil,
-        debug: Bool = false,
-        downloadCompleteHandler: @escaping DownloadCompleteHandler
-    ) throws -> Response {
-        let r = Request(
-            method: .GET, url: url, headers: headers, cookie: cookie, auth: auth,
-            allowRedirects: allowRedirects, debug: debug)
-        let res = Response(r)
-        res.downloadCompleteHandler = downloadCompleteHandler
-        return try r.perform(res: res)
-    }
-
+    
     public init(
         method: HttpMethod, url: String, params: [(String, CustomStringConvertible)] = [],
         data: String? = nil, json: Data? = nil, files: [Mime]? = nil,
@@ -397,4 +283,125 @@ public class Request {
         curl_slist_free_all(self.headerList)
 
     }
+}
+
+
+extension Request {
+    public static func get(
+        url: String, params: [(String, CustomStringConvertible)] = [],
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .GET, url: url, params: params, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform(res: Response(r))
+    }
+
+
+
+    public static func post(
+        url: String, data: String? = nil, json: Data? = nil,
+        files: [Mime]? = nil,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .POST, url: url, data: data, json: json, files: files, headers: headers,
+            auth: auth, allowRedirects: allowRedirects, debug: debug)
+        return try r.perform(res: Response(r))
+    }
+
+    public static func put(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .PUT, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform(res: Response(r))
+    }
+
+    public static func head(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .HEAD, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform(res: Response(r))
+    }
+
+    public static func delete(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .DELETE, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform(res: Response(r))
+    }
+
+    public static func patch(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .PATCH, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform(res: Response(r))
+    }
+
+    public static func options(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false
+    ) throws -> Response {
+        let r = Request(
+            method: .OPTIONS, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        return try r.perform(res: Response(r))
+    }
+
+    public static func download(
+        url: String,
+        headers: [String: CustomStringConvertible] = [:],
+        auth: String? = nil,
+        allowRedirects: Bool = false,
+        cookie: String? = nil,
+        debug: Bool = false,
+        downloadCompleteHandler: @escaping DownloadCompleteHandler
+    ) throws -> Response {
+        let r = Request(
+            method: .GET, url: url, headers: headers, cookie: cookie, auth: auth,
+            allowRedirects: allowRedirects, debug: debug)
+        let res = Response(r)
+        res.downloadCompleteHandler = downloadCompleteHandler
+        return try r.perform(res: res)
+    }
+
 }
