@@ -68,7 +68,6 @@ func cprogressHandler(
     return 0
 }
 
-
 let readHandler: @convention(c) (Buffer, Int, Int, UserData) -> Int =
     creadHandler
 let writeHandler: @convention(c) (Buffer, Int, Int, UserData) -> Int =
@@ -219,103 +218,126 @@ public class Request {
     ) {
         curl_global_init(Int(CURL_GLOBAL_ALL))
         self.curl = curl_easy_init()
-        curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
 
-        if let cookie = cookie {
-            curl_setopt(curl, CURLOPT_COOKIEFILE, cookie)
-            curl_setopt(curl, CURLOPT_COOKIEJAR, cookie)
-        }
-
-        curl_setopt(curl, CURLOPT_COOKIEFILE, "")
-
-        if allowRedirects {
-            curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
-        }
-
-        if debug {
-            curl_setopt(curl, CURLOPT_VERBOSE, 1)
-        }
-
-        var _url = url
-
-        if params.count > 0 {
-            var result: [String] = []
-            for (k, v) in params {
-                let ck = String(cString: curl_easy_escape(nil, "\(k)", Int32(k.utf8.count)))
-                let cv = String(
-                    cString: curl_easy_escape(nil, "\(v)", Int32(v.description.utf8.count)))
-                result.append("\(ck)=\(cv)")
+        func setMethod() {
+            switch method {
+            case .POST:
+                curl_setopt(curl, CURLOPT_POST, 1)
+            case .PUT:
+                curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT")
+            case .HEAD:
+                curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "HEAD")
+            case .DELETE:
+                curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE")
+            case .OPTIONS:
+                curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "OPTIONS")
+            case .PATCH:
+                curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH")
+            default:
+                break
             }
-            let ps = "?" + result.joined(separator: "&")
-            _url += ps
         }
 
-        switch method {
-        case .POST:
-            curl_setopt(curl, CURLOPT_POST, 1)
-        case .PUT:
-            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT")
-        case .HEAD:
-            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "HEAD")
-        case .DELETE:
-            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE")
-        case .OPTIONS:
-            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "OPTIONS")
-        case .PATCH:
-            curl_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH")
-        default:
-            break
+        func setCookie() {
+            if let cookie = cookie {
+                curl_setopt(curl, CURLOPT_COOKIEFILE, cookie)
+                curl_setopt(curl, CURLOPT_COOKIEJAR, cookie)
+            }
+
+            curl_setopt(curl, CURLOPT_COOKIEFILE, "")
         }
 
-        var _headers = headers
-        if let json = json {
-            _headers["Content-Type"] = "application/json"
-            _headers["charset"] = "utf-8"
-            self.formData = json
+        func setOtherOption() {
+            curl_setopt(curl, CURLOPT_TRANSFER_ENCODING, 1)
+
+            if allowRedirects {
+                curl_setopt(curl, CURLOPT_FOLLOWLOCATION, 1)
+            }
+
+            if debug {
+                curl_setopt(curl, CURLOPT_VERBOSE, 1)
+            }
         }
 
-        if let _ = files {
-            _headers["Expect"] = ""
-        }
-
-        _headers.merge(defaultHeaders, uniquingKeysWith: { (_, last) in last })
-
-        var headerList: UnsafeMutablePointer<curl_slist>? = nil
-        _headers.forEach { (item) in
-            headerList = curl_slist_append(headerList, "\(item.key):\(item.value)")
-        }
-        curl_setopt(self.curl, CURLOPT_HTTPHEADER, headerList)
-        self.headerList = headerList
-
-        if let auth = auth {
-            curl_setopt(curl, CURLOPT_HTTPAUTH, curlauth_any)
-            curl_setopt(curl, CURLOPT_USERPWD, auth)
-        }
-
-        if let data = data {
-            self.formData = data.data(using: .utf8)
-        }
-
-        if let files = files {
-            self.mimeForm = curl_mime_init(curl)
-            files.forEach { (item) in
-                switch item {
-                case .textFiled(let name, let data):
-                    let field = curl_mime_addpart(self.mimeForm)
-                    curl_mime_name(field, name)
-                    curl_mime_data(field, data, CURL_ZERO_TERMINATED)
-                case .fileFiled(let name, let data):
-                    let field = curl_mime_addpart(self.mimeForm)
-                    curl_mime_name(field, name)
-                    curl_mime_filedata(field, data)
+        func setParams() {
+            var _url = url
+            if params.count > 0 {
+                var result: [String] = []
+                for (k, v) in params {
+                    let ck = String(cString: curl_easy_escape(nil, "\(k)", Int32(k.utf8.count)))
+                    let cv = String(
+                        cString: curl_easy_escape(nil, "\(v)", Int32(v.description.utf8.count)))
+                    result.append("\(ck)=\(cv)")
                 }
+                let ps = "?" + result.joined(separator: "&")
+                _url += ps
             }
 
-            curl_setopt(curl, CURLOPT_MIMEPOST, self.mimeForm)
+            curl_setopt(self.curl, CURLOPT_URL, _url)
         }
 
-        curl_setopt(self.curl, CURLOPT_URL, _url)
+        func setHeader() {
+            var _headers = headers
+            if let json = json {
+                _headers["Content-Type"] = "application/json"
+                _headers["charset"] = "utf-8"
+                self.formData = json
+            }
 
+            if let _ = files {
+                _headers["Expect"] = ""
+            }
+
+            _headers.merge(defaultHeaders, uniquingKeysWith: { (_, last) in last })
+
+            var headerList: UnsafeMutablePointer<curl_slist>? = nil
+            _headers.forEach { (item) in
+                headerList = curl_slist_append(headerList, "\(item.key):\(item.value)")
+            }
+            curl_setopt(self.curl, CURLOPT_HTTPHEADER, headerList)
+            self.headerList = headerList
+        }
+
+        func setAuth() {
+            if let auth = auth {
+                curl_setopt(curl, CURLOPT_HTTPAUTH, curlauth_any)
+                curl_setopt(curl, CURLOPT_USERPWD, auth)
+            }
+        }
+
+        func setFormData() {
+            if let data = data {
+                self.formData = data.data(using: .utf8)
+            }
+        }
+
+        func setFiles() {
+            if let files = files {
+                self.mimeForm = curl_mime_init(curl)
+                files.forEach { (item) in
+                    switch item {
+                    case .textFiled(let name, let data):
+                        let field = curl_mime_addpart(self.mimeForm)
+                        curl_mime_name(field, name)
+                        curl_mime_data(field, data, CURL_ZERO_TERMINATED)
+                    case .fileFiled(let name, let data):
+                        let field = curl_mime_addpart(self.mimeForm)
+                        curl_mime_name(field, name)
+                        curl_mime_filedata(field, data)
+                    }
+                }
+
+                curl_setopt(curl, CURLOPT_MIMEPOST, self.mimeForm)
+            }
+        }
+
+        setMethod()
+        setCookie()
+        setOtherOption()
+        setParams()
+        setAuth()
+        setFormData()
+        setFiles()
     }
 
     public func perform(res: Response) throws -> Response {
