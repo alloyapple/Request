@@ -22,9 +22,12 @@ public class Response {
         var result: [String] = []
 
         while list != nil {
-            let c = String(cString: list!.pointee.data)
-            list = list?.pointee.next
+            guard let l = list else {
+                continue
+            }
+            let c = String(cString: l.pointee.data)
             result.append(c)
+            list = list?.pointee.next
         }
 
         curl_slist_free_all(nc)
